@@ -1,0 +1,12 @@
+[project]
+name = "django-sp-admin"
+description = "Starting point UI for Django admin"
+type = "backend"
+
+[backend]
+framework = "django"
+root_path = "backend"
+
+[backend-django]
+django_version = "6.0"
+python_version = "3.14"

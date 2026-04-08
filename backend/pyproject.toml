@@ -1,0 +1,26 @@
+[project]
+name = "django-sp-admin"
+version = "0.1.0"
+description = "Starting point UI for Django admin"
+requires-python = ">=3.14"
+readme = "README.md"
+dependencies = [
+    "django~=6.0.0",
+    "django-environ>=0.13.0",
+    "django-redis>=6.0.0",
+    "django-typer>=3.7.1",
+    "ipdb>=0.13.13",
+    "ipython>=9.12.0",
+    "psycopg2-binary>=2.9.11",
+    "python-dotenv>=1.2.2",
+    "uvicorn>=0.44.0",
+]
+
+[dependency-groups]
+dev = [
+    "django-upgrade>=1.30.0",
+    "factory-boy>=3.3.3",
+    "pre-commit>=4.5.1",
+    "rich>=14.3.3",
+    "ruff>=0.15.9",
+]
