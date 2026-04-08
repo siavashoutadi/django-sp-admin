@@ -11,6 +11,7 @@ ADD . /app
 RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
     mkdir -p /app/locale/ && \
+    uv run manage.py tailwind build --force && \
     uv run manage.py collectstatic --noinput && \
     uv run manage.py compilemessages
 

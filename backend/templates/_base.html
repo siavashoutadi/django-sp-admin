@@ -1,3 +1,4 @@
+{% load tailwind_cli %}
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
@@ -12,6 +13,8 @@
         type="image/x-icon" />
     <title>{% block title %}Home{% endblock %}</title>
     {% block extra_head %}{% endblock %}
+    {% tailwind_css %}
+    {% include "./_tw_dark_mode.html" %}
   </head>
   <body>
     {% include './_notification.html' %}
