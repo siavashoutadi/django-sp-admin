@@ -12,6 +12,7 @@
        <link rel="icon" href="{% static 'images/favicon.svg' %}"
         type="image/x-icon" />
     <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/starting-point-ui.min.css' %}">
     {% block extra_head %}{% endblock %}
     {% tailwind_css %}
     {% include "./_tw_dark_mode.html" %}
@@ -21,5 +22,6 @@
     {% block content %}
     {% endblock content %}
     {% block extra_body %}{% endblock %}
+    <script src="{% static 'js/starting-point-ui.min.js' %}" type="module"></script>
   </body>
 </html>

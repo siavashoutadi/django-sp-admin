@@ -1,3 +1,4 @@
 @import "tailwindcss";
+@import "./starting-point-ui.min.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
