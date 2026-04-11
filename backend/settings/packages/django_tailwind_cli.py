@@ -6,4 +6,4 @@ INSTALLED_APPS += [
 ]
 
 TAILWIND_CLI_SRC_CSS = BASE_DIR / "tailwind" / "src" / "css" / "input.css"
-TAILWIND_CLI_DIST_CSS = "css/tailwind.min.css"
+TAILWIND_CLI_DIST_CSS = "css/admin/django_sp_admin.min.css"
