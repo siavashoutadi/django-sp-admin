@@ -1,0 +1,42 @@
+{% load i18n %}
+
+{% if cl.search_fields %}
+<div class="mb-6">
+    <h2 id="changelist-search-form" class="sr-only">{% blocktranslate with name=cl.opts.verbose_name_plural %}Search {{ name }}{% endblocktranslate %}</h2>
+    <form id="changelist-search" method="get" role="search" aria-labelledby="changelist-search-form" class="w-full">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <i class="ri-search-line"></i>
+        </span>
+        <input
+          type="text"
+          size="40"
+          name="{{ search_var }}"
+          value="{{ cl.query }}"
+          id="searchbar"
+          autofocus
+          placeholder="{% translate 'Search' %}"
+          class="input w-full"
+          {% if cl.search_help_text %}aria-describedby="searchbar_helptext"{% endif %}
+        />
+        <input type="submit" value="{% translate 'Search' %}" class="btn btn-primary rounded-l-none cursor-pointer text-sm px-3 py-1" />
+      </div>
+      {% if show_result_count %}
+        <div class="mt-2 text-sm text-gray-600">
+          {% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %}
+          (<a href="?{% if cl.is_popup %}{{ is_popup_var }}=1{% if cl.add_facets %}&{% endif %}{% endif %}{% if cl.add_facets %}{{ is_facets_var }}{% endif %}">
+            {% if cl.show_full_result_count %}{% blocktranslate with full_result_count=cl.full_result_count %}{{ full_result_count }} total{% endblocktranslate %}{% else %}{% trans "Show all" %}{% endif %}
+          </a>)
+        </div>
+      {% endif %}
+      {% for pair in cl.params.items %}
+        {% if pair.0 != search_var %}
+          <input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}"/>
+        {% endif %}
+      {% endfor %}
+      {% if cl.search_help_text %}
+        <div class="field-description mt-2" id="searchbar_helptext">{{ cl.search_help_text|safe }}</div>
+      {% endif %}
+    </form>
+</div>
+{% endif %}

@@ -38,6 +38,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
     list_display = ["name", "email", "created_at"]
     list_filter = ["created_at"]
+    date_hierarchy = "created_at"
     search_fields = ["name", "email"]
     readonly_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
@@ -49,6 +50,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
     list_display = ["name", "slug", "created_at"]
     list_filter = ["created_at"]
+    date_hierarchy = "created_at"
     search_fields = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
     ordering = ["name"]
@@ -60,6 +62,7 @@ class TagAdmin(admin.ModelAdmin):
 
     list_display = ["name", "slug", "created_at"]
     list_filter = ["created_at"]
+    date_hierarchy = "created_at"
     search_fields = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
     ordering = ["name"]
@@ -71,6 +74,7 @@ class PostAdmin(admin.ModelAdmin):
 
     list_display = ["title", "author", "is_published", "created_at"]
     list_filter = ["is_published", "created_at", "author", "categories"]
+    date_hierarchy = "created_at"
     search_fields = ["title", "content", "author__name"]
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ["created_at", "updated_at"]
@@ -90,6 +94,7 @@ class CommentAdmin(admin.ModelAdmin):
 
     list_display = ["author", "post", "is_approved", "created_at"]
     list_filter = ["is_approved", "created_at", "post__author"]
+    date_hierarchy = "created_at"
     search_fields = ["content", "author__name", "post__title"]
     readonly_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]

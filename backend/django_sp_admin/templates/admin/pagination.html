@@ -1,0 +1,23 @@
+{% load admin_list %}
+{% load i18n %}
+
+<nav class="flex flex-col-reverse sm:flex-row gap-1 items-center justify-between" aria-labelledby="pagination">
+  <h2 id="pagination" class="sr-only">{% blocktranslate with name=cl.opts.verbose_name_plural %}Pagination {{ name }}{% endblocktranslate %}</h2>
+
+  {% if pagination_required %}
+    <ul class="flex flex-wrap items-center gap-1 justify-center flex-1">
+      {% for i in page_range %}
+        <li class="btn btn-secondary cursor-pointer btn-icon"{% if i == cl.page_num %} aria-current="page"{% endif %}>{% paginator_number cl i %}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="flex flex-col-reverse sm:flex-row items-center w-full sm:w-auto gap-2 mb-2">
+    {% if show_all_url %}
+      <a href="{{ show_all_url }}" class="btn btn-secondary cursor-pointer w-full sm:w-auto">{% translate 'Show all' %}</a>
+    {% endif %}
+    <div class="text-sm text-muted-foreground">
+      {{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}
+    </div>
+  </div>
+</nav>

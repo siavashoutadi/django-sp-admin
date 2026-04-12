@@ -56,12 +56,30 @@ class Command(TyperCommand):
                 help="Average number of comments per post (2-8)",
             ),
         ] = 4,
+        clear: Annotated[
+            bool,
+            typer.Option(
+                "--clear",
+                help="Clear existing data before seeding",
+            ),
+        ] = False,
     ):
         """
         Seed blog database with dummy data.
         Creates authors, categories, tags, posts (with categories and tags),
         and comments for each post.
         """
+        # Clear existing data if requested
+        if clear:
+            typer.echo("🗑️  Clearing existing data...")
+            Post.objects.all().delete()
+            Comment.objects.all().delete()
+            Author.objects.all().delete()
+            Category.objects.all().delete()
+            Tag.objects.all().delete()
+            typer.echo("✓ Data cleared")
+            typer.echo("")
+
         # Validate inputs
         if posts < 1 or posts > 1000:
             typer.echo("❌ Posts count must be between 1 and 1000")

@@ -1,0 +1,84 @@
+{% load i18n admin_urls static django_sp_admin_filters %}
+
+{% if result_hidden_fields %}
+  <div class="hiddenfields">{# DIV for HTML validation #}
+    {% for item in result_hidden_fields %}{{ item }}{% endfor %}
+  </div>
+{% endif %}
+
+{% if results %}
+  <div class="w-full overflow-x-auto max-w-screen">
+    <table class="table">
+      <thead class="table-header">
+        <tr class="table-row">
+          {% if cl.formset %}
+            <th class="table-head w-12">
+              <div class="checkbox-wrapper">
+                <input type="checkbox" id="action-toggle" class="checkbox"/>
+                <label for="action-toggle" class="sr-only">{% trans "Select all" %}</label>
+              </div>
+            </th>
+          {% endif %}
+          {% for header in result_headers %}
+            <th class="table-head{% if header.sortable %} cursor-pointer{% endif %}" {{ header.class_attrib }}>
+              {% if header.sortable and header.sort_priority > 0 %}
+                <div class="flex items-center gap-1">
+                  <a href="{{ header.url_primary }}" class="flex items-center gap-1 hover:text-primary">
+                    {{ header.text|capfirst }}
+                    {% if header.ascending %}
+                      <i class="ri-arrow-up-line inline-block" aria-hidden="true"></i>
+                    {% else %}
+                      <i class="ri-arrow-down-line inline-block" aria-hidden="true"></i>
+                    {% endif %}
+                  </a>
+                  {% if num_sorted_fields > 1 %}
+                    <span class="text-xs font-medium text-muted-foreground" title="{% blocktranslate with priority_number=header.sort_priority %}Sorting priority: {{ priority_number }}{% endblocktranslate %}">{{ header.sort_priority }}</span>
+                  {% endif %}
+                  <a href="{{ header.url_remove }}" class="ml-1 text-muted-foreground hover:text-destructive" title="{% translate "Remove from sorting" %}" aria-label="Remove {{ header.text }} from sort">
+                    <i class="ri-close-line" aria-hidden="true"></i>
+                  </a>
+                  <a href="{{ header.url_toggle }}" class="text-muted-foreground hover:text-primary" title="{% translate "Toggle sorting" %}" aria-label="Toggle sort direction for {{ header.text }}">
+                    <i class="ri-arrow-up-down-line" aria-hidden="true"></i>
+                  </a>
+                </div>
+              {% elif header.sortable %}
+                <a href="{{ header.url_primary }}" class="hover:text-primary">
+                  {{ header.text|capfirst }}
+                </a>
+              {% else %}
+                <span>{{ header.text|capfirst }}</span>
+              {% endif %}
+            </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody class="table-body">
+        {% for result in results %}
+          {% if result.form and result.form.non_field_errors %}
+            <tr class="table-row bg-destructive/5">
+              <td colspan="{{ forloop.counter0|add:1 }}" class="table-cell p-3 text-sm font-medium text-destructive">
+                {{ result.form.non_field_errors }}
+              </td>
+            </tr>
+          {% endif %}
+          <tr class="table-row even:bg-muted/50 hover:bg-muted/70">
+            {% if cl.formset %}
+              <td class="table-cell w-12 py-6">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" name="_selected_action" value="{{ result.pk }}" class="checkbox" aria-label="{% blocktranslate with display=result.display %}Select {{ display }}{% endblocktranslate %}"/>
+                </div>
+              </td>
+            {% endif %}
+            {% for item in result %}
+              {{ item|add_cell_classes:"table-cell text-left" }}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="rounded-md border border-muted p-4 text-center">
+    <p class="text-sm text-muted-foreground">{% trans "No data to display" %}</p>
+  </div>
+{% endif %}

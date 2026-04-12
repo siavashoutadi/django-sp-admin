@@ -15,11 +15,9 @@
         Home
       {% endblock %}
     </title>
-    <link rel="stylesheet" href="{% static 'css/starting-point-ui.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/admin/starting-point-ui.min.css' %}" />
     {% include 'admin/_tw_dark_mode.html' %}
-    {% block extra_head %}
-
-    {% endblock %}
+    {% block extrahead %}{% endblock %}
     {% tailwind_css %}
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.css"
@@ -39,9 +37,7 @@
     {% endblock %}
 
     <!-- Scripts -->
-    <script src="{% static 'js/starting-point-ui.min.js' %}" type="module"></script>
-    {% block extra_scripts %}
-
-    {% endblock %}
+    <script src="{% static 'js/django_sp_admin/starting-point-ui.min.js' %}" type="module"></script>
+    {% block extra_scripts %}{% endblock %}
   </body>
 </html>

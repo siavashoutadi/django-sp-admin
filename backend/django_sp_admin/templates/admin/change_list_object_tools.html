@@ -1,0 +1,11 @@
+{% load i18n admin_urls %}
+
+{% if has_add_permission %}
+  <a
+    href="{% url opts|admin_urlname:'add' %}"
+    class="btn btn-primary gap-2 w-full xl:w-auto"
+  >
+    <i class="ri-add-circle-line"></i>
+    {% blocktranslate with verbose_name=opts.verbose_name %}Add {{ verbose_name }}{% endblocktranslate %}
+  </a>
+{% endif %}

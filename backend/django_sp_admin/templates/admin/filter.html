@@ -1,0 +1,36 @@
+{% load i18n %}
+
+<details class="border rounded-md overflow-hidden" data-filter-title="{{ title }}">
+  <summary class="flex items-center justify-between font-medium text-sm p-3 cursor-pointer hover:bg-muted/50 select-none">
+    <span>{{ title }}</span>
+    <i class="ri-arrow-down-s-line transition-transform" style="transform: rotate(0deg)"></i>
+  </summary>
+  <div class="border-t p-3 bg-muted/20">
+    <div class="w-fit">
+      <div class="field-group">
+        <span class="label sr-only">{{ title }}</span>
+        <div class="field-group gap-3">
+          {% for choice in choices %}
+            <div class="field field-horizontal">
+              <input
+                type="radio"
+                class="radio"
+                id="filter-{{ forloop.counter }}-{{ choice.value|slugify }}"
+                name="filter-{{ title|slugify }}"
+                value="{{ choice.query_string|escape }}"
+                {% if choice.selected %}checked=""{% endif %}
+                onchange="window.location.href = this.value"
+              />
+              <label class="label" for="filter-{{ forloop.counter }}-{{ choice.value|slugify }}">
+                {{ choice.display }}
+                {% if choice.display_count %}
+                  <span class="badge badge-secondary text-xs ml-auto">{{ choice.display_count }}</span>
+                {% endif %}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</details>
