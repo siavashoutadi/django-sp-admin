@@ -1,0 +1,140 @@
+{% extends 'admin/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+
+<div>
+  <div class="sidebar">
+    <div class="sidebar-backdrop"></div>
+    <aside class="sidebar-panel" id="admin-sidebar">
+      <div class="sidebar-content">
+        <header class="sidebar-header">
+          <div class="menu-btn menu-btn-lg text-left"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+        </header>
+        <nav class="sidebar-menu">
+          {% block nav_sidebar %}
+            {% for app in available_apps %}
+              <div class="menu-group">
+                <button class="menu-btn text-left" data-sp-toggle="collapsible" data-sp-target="#sidebar-app-{{ app.app_label }}">
+                  {{ app.name }}
+                  <i class="ri-arrow-down-s-line ml-auto transition-transform [[aria-expanded=false]>&]:rotate-[-90deg]"></i>
+                </button>
+                <div id="sidebar-app-{{ app.app_label }}" class="collapsible-panel">
+                  <div class="menu-subgroup">
+                    {% for model in app.models %}
+                      <a href="{{ model.admin_url }}" class="menu-btn menu-btn-sm text-left">{{ model.name }}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endblock %}
+        </nav>
+        <footer class="sidebar-footer border-t p-3 mt-auto">
+          {% if has_permission %}
+          <div class="flex items-center gap-2">
+            <div class="flex-1">
+              <div class="text-xs text-[var(--color-muted-foreground)]">{% translate 'Welcome' %}</div>
+              <div class="text-sm font-medium truncate">{% firstof user.get_short_name user.get_username %}</div>
+            </div>
+            <div class="relative group">
+              <button
+                class="btn btn-outline btn-icon-sm"
+                onclick="document.getElementById('admin-menu-dropdown').classList.toggle('hidden')"
+                aria-label="{% translate 'Menu' %}"
+              >
+                <i class="ri-more-2-line"></i>
+              </button>
+              <div id="admin-menu-dropdown" class="hidden absolute bottom-full right-0 mb-2 w-48 bg-[var(--color-background)] border rounded-lg shadow-lg z-50">
+                <div class="py-1">
+                  {% if user.has_usable_password %}
+                  <a href="{% url 'admin:password_change' %}" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--color-subtle-foreground)] text-[var(--color-foreground)]">
+                    <i class="ri-lock-line"></i>
+                    {% translate 'Change password' %}
+                  </a>
+                  {% endif %}
+
+                  <div class="border-t my-1"></div>
+
+                  <form method="post" action="{% url 'admin:logout' %}" class="block">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--color-subtle-foreground)] text-[var(--color-foreground)]">
+                      <i class="ri-logout-box-line"></i>
+                      {% translate 'Log out' %}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </footer>
+      </div>
+    </aside>
+    <main class="sidebar-page">
+      <header class="flex items-center gap-4 border-b p-4">
+        <button
+          class="btn btn-outline btn-icon"
+          data-sp-toggle="sidebar"
+          data-sp-target="#admin-sidebar"
+        >
+          <i class="ri-side-bar-line"></i>
+        </button>
+        <nav class="ml-auto flex items-center gap-2">
+          {% if site_url %}
+          <a href="{{ site_url }}" target="_blank" class="btn btn-ghost btn-sm gap-2" title="{% translate 'View site' %}">
+            <i class="ri-external-link-line"></i>
+            <span class="hidden sm:inline">{% translate 'View site' %}</span>
+          </a>
+          {% endif %}
+
+          <button type="button" class="btn btn-ghost btn-icon-sm" onclick="setTheme(document.documentElement.className === 'dark' ? 'light' : 'dark')" aria-label="{% translate 'Toggle theme' %}">
+            <i class="ri-sun-line hidden dark:inline"></i>
+            <i class="ri-moon-line inline dark:hidden"></i>
+          </button>
+
+          {% if LANGUAGES %}
+          <div class="dropdown">
+            <button
+              class="btn btn-ghost btn-icon-sm"
+              type="button"
+              data-sp-toggle="dropdown"
+              aria-label="{% translate 'Change language' %}"
+            >
+              <i class="ri-translate-2"></i>
+            </button>
+            <div class="dropdown-menu">
+              {% for language_code, language_name in LANGUAGES %}
+              <form method="post" action="{% url 'set_language' %}" class="block">
+                {% csrf_token %}
+                <button type="submit" name="language" value="{{ language_code }}" class="dropdown-item w-full text-left">
+                  {{ language_name }}
+                </button>
+              </form>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </nav>
+      </header>
+      <div class="p-6">
+        {% block site_content %}{% endblock %}
+      </div>
+      {% include './_notification.html' %}
+    </main>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  // Close admin menu dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('admin-menu-dropdown');
+    const button = event.target.closest('button[onclick*="admin-menu-dropdown"]');
+
+    if (!button && !dropdown.contains(event.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
+{% endblock extra_scripts %}
