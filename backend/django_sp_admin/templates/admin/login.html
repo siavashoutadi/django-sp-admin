@@ -1,0 +1,107 @@
+{% extends 'admin/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Log in to the Admin panel' %} {% endblock %}
+
+{% block content %}
+  <div class="flex min-h-screen items-center justify-center bg-(--color-background) p-6">
+    <div class="w-full max-w-sm space-y-8">
+      <div class="flex flex-col items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight text-(--color-foreground)">{% translate 'Sign in' %}</h1>
+        <p class="text-sm text-(--color-muted-foreground)">{% translate 'Enter your credentials to continue' %}</p>
+      </div>
+
+      {# ── Error alerts ── #}
+      {% if form.errors and not form.non_field_errors %}
+        <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200" role="alert">
+          <p class="font-medium">{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}</p>
+        </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200" role="alert">
+          {% for error in form.non_field_errors %}
+            {% if forloop.first %}
+              <p>{{ error }}</p>
+            {% else %}
+              <p class="mt-1">{{ error }}</p>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200" role="alert">
+          <p>{% blocktranslate trimmed %}You are authenticated as {{ username }}, but are not authorized to access this page. Would you like to login to a different account?{% endblocktranslate %}</p>
+        </div>
+      {% endif %}
+
+      {# ── Login form ── #}
+      <form action="{{ app_path }}" method="post" id="login-form" class="space-y-5">
+        {% csrf_token %}
+
+        {# Username field #}
+        <div class="field">
+          <label class="label" for="id_username">{{ form.username.label }}</label>
+          <input
+            class="input w-full"
+            type="text"
+            name="username"
+            id="id_username"
+            autofocus
+            autocapitalize="none"
+            autocomplete="username"
+            maxlength="150"
+            required
+            {% if form.username.value %}value="{{ form.username.value }}"{% endif %}
+            {% if form.username.errors %}aria-invalid="true" aria-describedby="id_username_errors"{% endif %}
+          />
+          {% if form.username.errors %}
+            <div id="id_username_errors">
+              {% for error in form.username.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Password field #}
+        <div class="field">
+          <label class="label" for="id_password">{{ form.password.label }}</label>
+          <input
+            class="input w-full"
+            type="password"
+            name="password"
+            id="id_password"
+            autocomplete="current-password"
+            required
+            {% if form.password.errors %}aria-invalid="true" aria-describedby="id_password_errors"{% endif %}
+          />
+          <input type="hidden" name="next" value="{{ next }}" />
+          {% if form.password.errors %}
+            <div id="id_password_errors">
+              {% for error in form.password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Forgot password link #}
+        {% url 'admin_password_reset' as password_reset_url %}
+        {% if password_reset_url %}
+          <div class="flex justify-end">
+            <a href="{{ password_reset_url }}" class="text-sm text-(--color-muted-foreground) hover:text-(--color-foreground) hover:underline transition-colors">
+              {% translate 'Forgotten your login credentials?' %}
+            </a>
+          </div>
+        {% endif %}
+
+        {# Submit button #}
+        <button type="submit" class="btn btn-default w-full">
+          {% translate 'Log in' %}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

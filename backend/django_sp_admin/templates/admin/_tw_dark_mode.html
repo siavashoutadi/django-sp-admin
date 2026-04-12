@@ -1,0 +1,33 @@
+<script>
+  ;(function () {
+    const theme = localStorage.getItem('theme')
+
+    if (theme === 'dark' || theme === 'light') {
+      document.documentElement.className = theme
+      document.documentElement.style.colorScheme = theme
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      document.documentElement.className = prefersDark ? 'dark' : 'light'
+      document.documentElement.style.colorScheme = prefersDark ? 'dark' : 'light'
+    }
+  })()
+
+  function setTheme(mode) {
+    console.log('Setting theme to:', mode)
+    if (mode === 'dark') {
+      localStorage.setItem('theme', 'dark')
+      document.documentElement.className = 'dark'
+      document.documentElement.style.colorScheme = 'dark'
+    } else if (mode === 'light') {
+      localStorage.setItem('theme', 'light')
+      document.documentElement.className = 'light'
+      document.documentElement.style.colorScheme = 'light'
+    } else {
+      localStorage.removeItem('theme')
+
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      document.documentElement.className = prefersDark ? 'dark' : 'light'
+      document.documentElement.style.colorScheme = prefersDark ? 'dark' : 'light'
+    }
+  }
+</script>
