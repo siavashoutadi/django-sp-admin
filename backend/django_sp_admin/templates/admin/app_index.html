@@ -1,0 +1,152 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n static django_sp_admin %}
+
+{% block site_content %}
+<div class="space-y-8 pb-8">
+
+  {# ======== APP STATISTICS ======== #}
+  <section>
+    <div class="section-title mb-6">
+      <h2 class="text-2xl font-bold">{% trans "App Statistics" %}</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-content">
+        {% app_model_stats app_label app_list as stats %}
+        {% app_activity_summary app_label as activity %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {# Total Models #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+              <i class="ri-layout-grid-line mr-1"></i>
+              {% trans "Total Models" %}
+            </p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ stats.total_models }}</p>
+          </div>
+
+          {# Accessible Models #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+              <i class="ri-check-double-line mr-1"></i>
+              {% trans "Accessible Models" %}
+            </p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ stats.accessible_models }}</p>
+          </div>
+
+          {# Total Records #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+              <i class="ri-database-line mr-1"></i>
+              {% trans "Recent Changes" %}
+            </p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ activity.recent_changes }}</p>
+            <span class="text-xs text-muted-foreground">{% trans "Last 7 days" %}</span>
+          </div>
+
+          {# Activity Indicators #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+              <i class="ri-pulse-line mr-1"></i>
+              {% trans "Activity" %}
+            </p>
+            <div class="flex items-baseline gap-2">
+              <span class="badge bg-green-500/10 text-green-600 border-0">
+                <i class="ri-add-circle-line"></i>
+                +{{ activity.total_additions }}
+              </span>
+            </div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="badge bg-red-500/10 text-red-600 border-0">
+                <i class="ri-delete-bin-line"></i>
+                -{{ activity.total_deletions }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ======== MODEL HEALTH - TOP MODELS BY RECORDS ======== #}
+  {% app_model_health app_label app_list as model_health %}
+  {% if model_health %}
+  <section>
+    <div class="section-title mb-6">
+      <h2 class="text-2xl font-bold">{% trans "Models by Record Count" %}</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-content p-0">
+        <div class="w-full overflow-x-auto">
+          <table class="table w-full">
+            <thead class="table-header">
+              <tr class="table-row">
+                <th class="table-head">{% trans "Model" %}</th>
+                <th class="table-head text-right">{% trans "Records" %}</th>
+                <th class="table-head text-center">{% trans "Status" %}</th>
+                <th class="table-head text-center">{% trans "Access" %}</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              {% for model in model_health %}
+                <tr class="table-row">
+                  <td class="table-cell">
+                    {% if model.admin_url %}
+                      <a href="{{ model.admin_url }}" class="text-primary hover:underline font-medium">
+                        {{ model.name }}
+                      </a>
+                    {% else %}
+                      <span class="font-medium">{{ model.name }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="table-cell text-right">
+                    <span class="font-semibold">{{ model.count }}</span>
+                  </td>
+                  <td class="table-cell text-center">
+                    {% if model.count == 0 %}
+                      <span class="badge bg-gray-500/10 text-gray-600 border-0">
+                        <i class="ri-inbox-line"></i>
+                        {% trans "Empty" %}
+                      </span>
+                    {% elif model.count > 1000 %}
+                      <span class="badge bg-blue-500/10 text-blue-600 border-0">
+                        <i class="ri-bar-chart-2-line"></i>
+                        {% trans "Large" %}
+                      </span>
+                    {% else %}
+                      <span class="badge bg-green-500/10 text-green-600 border-0">
+                        <i class="ri-check-line"></i>
+                        {% trans "Active" %}
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td class="table-cell text-center">
+                    <div class="flex justify-center gap-1">
+                      {% if model.perms.view %}
+                        <span class="badge badge-secondary text-xs" title="View">V</span>
+                      {% endif %}
+                      {% if model.perms.add %}
+                        <span class="badge badge-secondary text-xs" title="Add">A</span>
+                      {% endif %}
+                      {% if model.perms.change %}
+                        <span class="badge badge-secondary text-xs" title="Change">C</span>
+                      {% endif %}
+                      {% if model.perms.delete %}
+                        <span class="badge badge-secondary text-xs" title="Delete">D</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+
+{% endblock %}

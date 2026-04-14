@@ -1,11 +1,13 @@
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import django
 from django import template
 from django.conf import settings
+from django.contrib.admin.models import LogEntry
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 
 register = template.Library()
 
@@ -141,6 +143,136 @@ def time_since(timestamp):
     else:
         weeks = int(seconds / 604800)
         return f"{weeks}w ago"
+
+
+@register.simple_tag
+def app_model_stats(app_label, app_list):
+    """
+    Get model statistics for a specific app.
+    Returns dict with: total_models, accessible_models
+    """
+    if not app_list:
+        return {
+            "total_models": 0,
+            "accessible_models": 0,
+        }
+
+    # Find the app in app_list
+    app_entry = next(
+        (app for app in app_list if app.get("app_label") == app_label), None
+    )
+
+    if not app_entry:
+        return {
+            "total_models": 0,
+            "accessible_models": 0,
+        }
+
+    models = app_entry.get("models", [])
+    total = len(models)
+    accessible = sum(1 for m in models if any(m.get("perms", {}).values()))
+
+    return {
+        "total_models": total,
+        "accessible_models": accessible,
+    }
+
+
+@register.simple_tag
+def app_activity_summary(app_label):
+    """
+    Get activity summary for an app over the last 7 days.
+    Returns dict with: recent_changes, total_additions, total_deletions
+    """
+    from django.apps import apps as django_apps
+    from django.contrib.contenttypes.models import ContentType
+
+    try:
+        # Get all content types for this app
+        app_config = django_apps.get_app_config(app_label)
+        models_in_app = [model for model in app_config.get_models()]
+
+        if not models_in_app:
+            return {
+                "recent_changes": 0,
+                "total_additions": 0,
+                "total_deletions": 0,
+                "total_activity": 0,
+            }
+
+        # Get content types for all models in this app
+        content_types = ContentType.objects.filter(app_label=app_label).values_list(
+            "id", flat=True
+        )
+
+        # Get log entries from last 7 days
+        seven_days_ago = now() - timedelta(days=7)
+        logs = LogEntry.objects.filter(
+            content_type_id__in=content_types, action_time__gte=seven_days_ago
+        )
+
+        total_changes = logs.count()
+        total_additions = logs.filter(action_flag=1).count()
+        total_deletions = logs.filter(action_flag=3).count()
+
+        return {
+            "recent_changes": total_changes,
+            "total_additions": total_additions,
+            "total_deletions": total_deletions,
+            "total_activity": total_changes,
+        }
+    except Exception:
+        return {
+            "recent_changes": 0,
+            "total_additions": 0,
+            "total_deletions": 0,
+            "total_activity": 0,
+        }
+
+
+@register.simple_tag
+def app_model_health(app_label, app_list):
+    """
+    Get record count statistics for each model in the app.
+    Returns list of dicts with: name, object_name, count, perms, admin_url
+    Sorted by record count (descending).
+    """
+    if not app_list:
+        return []
+
+    # Find the app in app_list
+    app_entry = next(
+        (app for app in app_list if app.get("app_label") == app_label), None
+    )
+
+    if not app_entry:
+        return []
+
+    models = app_entry.get("models", [])
+    model_stats = []
+
+    for model_info in models:
+        try:
+            # Get the actual Django model class
+            model_class = model_info.get("model")
+            if model_class:
+                count = model_class.objects.count()
+                model_stats.append(
+                    {
+                        "name": model_info.get("name", ""),
+                        "object_name": model_info.get("object_name", ""),
+                        "count": count,
+                        "perms": model_info.get("perms", {}),
+                        "admin_url": model_info.get("admin_url", ""),
+                    }
+                )
+        except Exception:
+            # If we can't count, skip this model
+            pass
+
+    # Sort by count descending, limit to top 5
+    model_stats.sort(key=lambda x: x["count"], reverse=True)
+    return model_stats[:5]
 
 
 @register.inclusion_tag("admin/_user_app_list.html")
