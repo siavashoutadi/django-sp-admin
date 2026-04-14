@@ -34,12 +34,12 @@
           {% if has_permission %}
           <div class="flex items-center gap-2">
             <button
-              class="flex-1 text-left cursor-pointer"
+              class="flex-1 text-left cursor-pointer px-2 py-2 hover:text-muted-foreground"
               data-sp-toggle="dialog"
               data-sp-target="#user-profile-dialog"
               type="button"
             >
-              <div class="text-xs text-[var(--color-muted-foreground)]">{% translate 'Welcome' %}</div>
+              <div class="text-xs text-(--color-muted-foreground)">{% translate 'Welcome' %}</div>
               <div class="text-sm font-medium truncate">{% firstof user.get_short_name user.get_username %}</div>
             </button>
             <div class="relative group">
@@ -53,7 +53,7 @@
               <div id="admin-menu-dropdown" class="hidden absolute bottom-full right-0 mb-2 w-48 bg-[var(--color-background)] border rounded-lg shadow-lg z-50">
                 <div class="py-1">
                   {% if user.has_usable_password %}
-                  <a href="{% url 'admin:password_change' %}" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--color-subtle-foreground)] text-[var(--color-foreground)]">
+                  <a href="{% url 'admin:password_change' %}" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted">
                     <i class="ri-lock-line"></i>
                     {% translate 'Change password' %}
                   </a>
@@ -63,7 +63,7 @@
 
                   <form method="post" action="{% url 'admin:logout' %}" class="block">
                     {% csrf_token %}
-                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--color-subtle-foreground)] text-[var(--color-foreground)]">
+                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted cursor-pointer">
                       <i class="ri-logout-box-line"></i>
                       {% translate 'Log out' %}
                     </button>
