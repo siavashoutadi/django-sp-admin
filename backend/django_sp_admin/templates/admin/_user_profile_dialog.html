@@ -1,4 +1,4 @@
-{% load i18n static admin_system_info %}
+{% load i18n static django_sp_admin %}
 
 <dialog
   id="user-profile-dialog"
@@ -122,58 +122,7 @@
         <section>
           <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Permissions</h2>
 
-          {% if app_list %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
-              {% for app in app_list %}
-                <div class="card">
-                  <div class="card-content">
-                    <h3 class="font-bold text-base sm:text-lg flex items-center gap-2 mb-4">
-                      <i class="ri-folder-line"></i>
-                      {{ app.name }}
-                    </h3>
-
-                    <div class="space-y-3">
-                      {% for model in app.models %}
-                        <div>
-                          <p class="font-medium text-sm">{{ model.name }}</p>
-                          <div class="flex flex-wrap gap-1 mt-1.5">
-                            {% if model.perms.add %}
-                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                                <i class="ri-add-line"></i> Add
-                              </span>
-                            {% endif %}
-                            {% if model.perms.change %}
-                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                                <i class="ri-edit-line"></i> Change
-                              </span>
-                            {% endif %}
-                            {% if model.perms.delete %}
-                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                                <i class="ri-delete-bin-line"></i> Delete
-                              </span>
-                            {% endif %}
-                            {% if model.perms.view %}
-                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                                <i class="ri-eye-line"></i> View
-                              </span>
-                            {% endif %}
-                            {% if not model.perms.add and not model.perms.change and not model.perms.delete and not model.perms.view %}
-                              <span class="text-muted-foreground text-xs">No permissions</span>
-                            {% endif %}
-                          </div>
-                        </div>
-                      {% endfor %}
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="text-center py-12">
-              <i class="ri-lock-line text-5xl text-muted-foreground inline-block"></i>
-              <p class="text-muted-foreground mt-3">No app access</p>
-            </div>
-          {% endif %}
+          {% user_app_list user %}
         </section>
 
       </div>

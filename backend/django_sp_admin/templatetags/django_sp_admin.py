@@ -1,15 +1,31 @@
-"""
-Template tags for admin dashboard system information
-"""
-
+import re
 import sys
 from datetime import datetime
 
 import django
 from django import template
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.filter
+def add_cell_classes(html, classes):
+    """Add classes to <td> and <th> tags in rendered HTML"""
+    # Add to <td> tags
+    html = re.sub(r'<td([^>]*)class="([^"]*)"', rf'<td\1class="\2 {classes}"', html)
+    # Add to <th> tags
+    html = re.sub(
+        r'<th([^>]*)class="([^"]*)"', rf'<th\1class="\2 underline {classes}"', html
+    )
+    # Replace checkbox class
+    html = re.sub(
+        r'<input([^>]*)type="checkbox"([^>]*)class="[^"]*"',
+        r'<input\1type="checkbox"\2class="checkbox"',
+        html,
+    )
+    return mark_safe(html)
 
 
 @register.simple_tag
@@ -125,3 +141,61 @@ def time_since(timestamp):
     else:
         weeks = int(seconds / 604800)
         return f"{weeks}w ago"
+
+
+@register.inclusion_tag("admin/_user_app_list.html")
+def user_app_list(user):
+    """
+    Get user's accessible apps and models with permissions.
+    Works on all admin pages regardless of view context.
+    """
+    from django.apps import apps
+    from django.contrib import admin
+
+    app_list = []
+    admin_site = admin.site
+
+    for model, admin_class in admin_site._registry.items():
+        app_label = model._meta.app_label
+
+        # Check if user has any permission for this model
+        has_add = user.has_perm(f"{app_label}.add_{model._meta.model_name}")
+        has_change = user.has_perm(f"{app_label}.change_{model._meta.model_name}")
+        has_delete = user.has_perm(f"{app_label}.delete_{model._meta.model_name}")
+        has_view = user.has_perm(f"{app_label}.view_{model._meta.model_name}")
+
+        if not any([has_add, has_change, has_delete, has_view]):
+            continue
+
+        # Find or create app entry
+        app_entry = next(
+            (app for app in app_list if app["app_label"] == app_label), None
+        )
+
+        if app_entry is None:
+            # Get app config
+            app_config = apps.get_app_config(app_label)
+            app_entry = {
+                "app_label": app_label,
+                "name": app_config.verbose_name,
+                "models": [],
+            }
+            app_list.append(app_entry)
+
+        # Add model to app entry
+        app_entry["models"].append(
+            {
+                "name": model._meta.verbose_name_plural.title(),
+                "perms": {
+                    "add": has_add,
+                    "change": has_change,
+                    "delete": has_delete,
+                    "view": has_view,
+                },
+                "admin_url": admin_class.get_urls()[0].pattern
+                if admin_class.get_urls()
+                else "#",
+            }
+        )
+
+    return {"app_list": app_list}
