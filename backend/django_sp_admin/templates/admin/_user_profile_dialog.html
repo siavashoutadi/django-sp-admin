@@ -1,0 +1,182 @@
+{% load i18n static admin_system_info %}
+
+<dialog
+  id="user-profile-dialog"
+  class="dialog"
+  aria-labelledby="user-profile-title"
+  aria-describedby="user-profile-desc"
+>
+  <div class="dialog-backdrop"></div>
+  <div class="dialog-panel max-w-none h-screen">
+    <button
+      class="btn btn-ghost btn-icon-sm absolute top-2 right-2"
+      aria-label="{% translate 'Close' %}"
+      data-sp-dismiss="dialog"
+    >
+      <i class="ri-close-line text-xl"></i>
+    </button>
+    <div class="dialog-content overflow-y-auto">
+      <div class="max-w-7xl mx-auto sm:px-6 py-4 sm:py-8">
+
+        {# ======== YOUR PROFILE ======== #}
+        <section class="mb-6 sm:mb-8">
+          <h2 id="user-profile-title" class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Profile</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6">
+            {# LEFT: Profile Info #}
+            <div class="card">
+              <div class="card-content">
+                <div class="flex flex-col items-center text-center">
+                  {% if user.first_name %}
+                    <div class="avatar-fallback text-2xl">
+                      {{ user.first_name|first }}{{ user.last_name|first|default:"U" }}
+                    </div>
+                  {% else %}
+                    <div class="avatar-fallback text-2xl">
+                      <i class="ri-user-line"></i>
+                    </div>
+                  {% endif %}
+
+                  <h3 class="font-bold text-xl mt-4">{{ user.get_full_name|default:user.username }}</h3>
+                  <p class="text-muted-foreground text-sm">@{{ user.username }}</p>
+                  {% if user.email %}
+                    <p class="text-muted-foreground text-sm mt-2">
+                      <i class="ri-mail-line"></i>
+                      {{ user.email }}
+                    </p>
+                  {% endif %}
+
+                  <div class="flex flex-wrap gap-2 mt-4 justify-center">
+                    {% if user.is_superuser %}
+                      <span class="badge badge-outline">
+                        <i class="ri-shield-star-line"></i>
+                        Superuser
+                      </span>
+                    {% endif %}
+                    {% if user.is_staff %}
+                      <span class="badge badge-outline">
+                        <i class="ri-user-shield-line"></i>
+                        Staff
+                      </span>
+                    {% endif %}
+                    {% if user.is_active %}
+                      <span class="badge" style="background-color: rgb(34 197 94 / 0.1); color: rgb(22 163 74);">
+                        <i class="ri-check-circle-line"></i>
+                        Active
+                      </span>
+                    {% else %}
+                      <span class="badge badge-destructive">
+                        <i class="ri-close-circle-line"></i>
+                        Inactive
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {# MIDDLE: Account Info #}
+            <div class="card">
+              <div class="card-content">
+                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Account Info</h4>
+                <div class="space-y-4">
+                  {% if user.last_login %}
+                    <div>
+                      <p class="text-xs text-muted-foreground">Last Login</p>
+                      <p class="font-medium text-sm mt-1">{{ user.last_login|time_since }}</p>
+                    </div>
+                  {% endif %}
+                  <div>
+                    <p class="text-xs text-muted-foreground">Joined</p>
+                    <p class="font-medium text-sm mt-1">{{ user.date_joined|date:"M d, Y" }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {# RIGHT: Actions #}
+            <div class="card">
+              <div class="card-content">
+                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Actions</h4>
+                <div class="space-y-2">
+                  <a href="{% url 'admin:password_change' %}" class="btn btn-outline btn-sm w-full justify-start">
+                    <i class="ri-lock-password-line"></i>
+                    Change Password
+                  </a>
+                  <form method="post" action="{% url 'admin:logout' %}" class="w-full">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-destructive btn-sm w-full justify-start">
+                      <i class="ri-logout-box-line"></i>
+                      Logout
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="my-6 sm:my-8">
+
+        {# ======== YOUR PERMISSIONS ======== #}
+        <section>
+          <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Permissions</h2>
+
+          {% if app_list %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+              {% for app in app_list %}
+                <div class="card">
+                  <div class="card-content">
+                    <h3 class="font-bold text-base sm:text-lg flex items-center gap-2 mb-4">
+                      <i class="ri-folder-line"></i>
+                      {{ app.name }}
+                    </h3>
+
+                    <div class="space-y-3">
+                      {% for model in app.models %}
+                        <div>
+                          <p class="font-medium text-sm">{{ model.name }}</p>
+                          <div class="flex flex-wrap gap-1 mt-1.5">
+                            {% if model.perms.add %}
+                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                <i class="ri-add-line"></i> Add
+                              </span>
+                            {% endif %}
+                            {% if model.perms.change %}
+                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                <i class="ri-edit-line"></i> Change
+                              </span>
+                            {% endif %}
+                            {% if model.perms.delete %}
+                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                <i class="ri-delete-bin-line"></i> Delete
+                              </span>
+                            {% endif %}
+                            {% if model.perms.view %}
+                              <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                <i class="ri-eye-line"></i> View
+                              </span>
+                            {% endif %}
+                            {% if not model.perms.add and not model.perms.change and not model.perms.delete and not model.perms.view %}
+                              <span class="text-muted-foreground text-xs">No permissions</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-12">
+              <i class="ri-lock-line text-5xl text-muted-foreground inline-block"></i>
+              <p class="text-muted-foreground mt-3">No app access</p>
+            </div>
+          {% endif %}
+        </section>
+
+      </div>
+    </div>
+  </div>
+</dialog>

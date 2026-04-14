@@ -33,10 +33,15 @@
         <footer class="sidebar-footer border-t p-3 mt-auto">
           {% if has_permission %}
           <div class="flex items-center gap-2">
-            <div class="flex-1">
+            <button
+              class="flex-1 text-left cursor-pointer"
+              data-sp-toggle="dialog"
+              data-sp-target="#user-profile-dialog"
+              type="button"
+            >
               <div class="text-xs text-[var(--color-muted-foreground)]">{% translate 'Welcome' %}</div>
               <div class="text-sm font-medium truncate">{% firstof user.get_short_name user.get_username %}</div>
-            </div>
+            </button>
             <div class="relative group">
               <button
                 class="btn btn-outline btn-icon-sm"
@@ -122,6 +127,7 @@
       </div>
       {% include './_notification.html' %}
     </main>
+    {% include 'admin/_user_profile_dialog.html' %}
   </div>
 </div>
 {% endblock %}

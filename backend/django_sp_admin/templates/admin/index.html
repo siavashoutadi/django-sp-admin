@@ -1,7 +1,132 @@
 {% extends 'admin/base_site.html' %}
-{% load i18n static %}
-
+{% load i18n static admin_system_info %}
 
 {% block site_content %}
-hello world
+<div class="space-y-8 pb-8">
+
+  {# ======== SYSTEM OVERVIEW ======== #}
+  <section>
+    <div class="section-title mb-6">
+      <h2 class="text-2xl font-bold">System Overview</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-content">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {# Django Version #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Django Version</p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{% django_version %}</p>
+          </div>
+
+          {# Python Version #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Python Version</p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{% python_version %}</p>
+          </div>
+
+          {# Database #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Database</p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{% database_engine %}</p>
+          </div>
+
+          {# Debug Mode #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Debug Mode</p>
+            {% if debug_mode %}
+              <p class="text-lg sm:text-xl lg:text-2xl font-semibold">Enabled</p>
+            {% else %}
+              <p class="text-lg sm:text-xl lg:text-2xl font-semibold">Disabled</p>
+            {% endif %}
+          </div>
+
+          {# Total Apps #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Registered Apps</p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ app_list|length }}</p>
+          </div>
+
+          {# Total Models #}
+          <div>
+            <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">Total Models</p>
+            <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ app_list|count_total_models }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ======== RECENT ADMIN ACTIONS ======== #}
+  <section>
+    <div class="section-title mb-6">
+      <h2 class="text-2xl font-bold">Recent Admin Actions</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-content p-0">
+        {% if log_entries %}
+          <div class="w-full overflow-x-auto">
+            <table class="table action-table w-full">
+              <thead class="table-header">
+                <tr class="table-row">
+                  <th class="table-head">User</th>
+                  <th class="table-head">Action</th>
+                  <th class="table-head">Model</th>
+                  <th class="table-head">Object</th>
+                  <th class="table-head text-right">Time</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                {% for entry in log_entries|slice:":10" %}
+                  <tr class="table-row">
+                    <td class="table-cell">
+                      <div class="flex items-center gap-2">
+                        <span class="avatar-fallback text-xs w-8 h-8">
+                          {{ entry.user.first_name|first|default:entry.user.username|first|upper }}
+                        </span>
+                        <span class="font-medium text-sm">{{ entry.user.username }}</span>
+                      </div>
+                    </td>
+                    <td class="table-cell">
+                      <span class="badge border-0 {{ entry.action_flag|action_type_badge_class }}">
+                        <i class="{{ entry.action_flag|action_type_icon }}"></i>
+                        {{ entry.action_flag|action_type_display }}
+                      </span>
+                    </td>
+                    <td class="table-cell text-sm">
+                      {% if entry.content_type %}
+                        {{ entry.content_type.name|title }}
+                      {% else %}
+                        <span class="text-muted-foreground">Unknown</span>
+                      {% endif %}
+                    </td>
+                    <td class="table-cell text-sm">
+                      {% if entry.get_admin_url %}
+                        <a href="{{ entry.get_admin_url }}" class="text-primary hover:underline truncate max-w-xs">
+                          {{ entry.object_repr|truncatewords:5 }}
+                        </a>
+                      {% else %}
+                        <span class="text-muted-foreground">{{ entry.object_repr|truncatewords:5 }}</span>
+                      {% endif %}
+                    </td>
+                    <td class="table-cell text-right text-sm text-muted-foreground">
+                      {{ entry.action_time|time_since }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="text-center py-8">
+            <i class="ri-inbox-line text-4xl text-muted-foreground"></i>
+            <p class="text-muted-foreground mt-2">No recent admin actions</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</div>
+
 {% endblock %}
