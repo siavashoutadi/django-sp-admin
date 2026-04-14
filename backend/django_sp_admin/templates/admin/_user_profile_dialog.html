@@ -20,7 +20,7 @@
 
         {# ======== YOUR PROFILE ======== #}
         <section class="mb-6 sm:mb-8">
-          <h2 id="user-profile-title" class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Profile</h2>
+          <h2 id="user-profile-title" class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{% translate "Your Profile" %}</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6">
             {# LEFT: Profile Info #}
@@ -50,24 +50,24 @@
                     {% if user.is_superuser %}
                       <span class="badge badge-outline">
                         <i class="ri-shield-star-line"></i>
-                        Superuser
+                        {% translate "Superuser" %}
                       </span>
                     {% endif %}
                     {% if user.is_staff %}
                       <span class="badge badge-outline">
                         <i class="ri-user-shield-line"></i>
-                        Staff
+                        {% translate "Staff" %}
                       </span>
                     {% endif %}
                     {% if user.is_active %}
                       <span class="badge" style="background-color: rgb(34 197 94 / 0.1); color: rgb(22 163 74);">
                         <i class="ri-check-circle-line"></i>
-                        Active
+                        {% translate "Active" %}
                       </span>
                     {% else %}
                       <span class="badge badge-destructive">
                         <i class="ri-close-circle-line"></i>
-                        Inactive
+                        {% translate "Inactive" %}
                       </span>
                     {% endif %}
                   </div>
@@ -78,16 +78,16 @@
             {# MIDDLE: Account Info #}
             <div class="card">
               <div class="card-content">
-                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Account Info</h4>
+                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">{% translate "Account Info" %}</h4>
                 <div class="space-y-4">
                   {% if user.last_login %}
                     <div>
-                      <p class="text-xs text-muted-foreground">Last Login</p>
+                      <p class="text-xs text-muted-foreground">{% translate "Last Login" %}</p>
                       <p class="font-medium text-sm mt-1">{{ user.last_login|time_since }}</p>
                     </div>
                   {% endif %}
                   <div>
-                    <p class="text-xs text-muted-foreground">Joined</p>
+                    <p class="text-xs text-muted-foreground">{% translate "Joined" %}</p>
                     <p class="font-medium text-sm mt-1">{{ user.date_joined|date:"M d, Y" }}</p>
                   </div>
                 </div>
@@ -97,17 +97,17 @@
             {# RIGHT: Actions #}
             <div class="card">
               <div class="card-content">
-                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Actions</h4>
+                <h4 class="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">{% translate "Actions" %}</h4>
                 <div class="space-y-2">
                   <a href="{% url 'admin:password_change' %}" class="btn btn-outline btn-sm w-full justify-start">
                     <i class="ri-lock-password-line"></i>
-                    Change Password
+                    {% translate "Change Password" %}
                   </a>
                   <form method="post" action="{% url 'admin:logout' %}" class="w-full">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-destructive btn-sm w-full justify-start">
                       <i class="ri-logout-box-line"></i>
-                      Logout
+                      {% translate "Logout" %}
                     </button>
                   </form>
                 </div>
@@ -120,7 +120,7 @@
 
         {# ======== YOUR PERMISSIONS ======== #}
         <section>
-          <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Permissions</h2>
+          <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{% translate "Permissions" %}</h2>
 
           {% user_app_list user %}
         </section>

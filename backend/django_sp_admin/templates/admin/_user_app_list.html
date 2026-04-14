@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% if app_list %}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
     {% for app in app_list %}
@@ -15,26 +17,26 @@
                 <div class="flex flex-wrap gap-1 mt-1.5">
                   {% if model.perms.add %}
                     <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                      <i class="ri-add-line"></i> Add
+                      <i class="ri-add-line"></i> {% translate "Add" %}
                     </span>
                   {% endif %}
                   {% if model.perms.change %}
                     <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                      <i class="ri-edit-line"></i> Change
+                      <i class="ri-edit-line"></i> {% translate "Change" %}
                     </span>
                   {% endif %}
                   {% if model.perms.delete %}
                     <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                      <i class="ri-delete-bin-line"></i> Delete
+                      <i class="ri-delete-bin-line"></i> {% translate "Delete" %}
                     </span>
                   {% endif %}
                   {% if model.perms.view %}
                     <span class="badge badge-outline badge-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                      <i class="ri-eye-line"></i> View
+                      <i class="ri-eye-line"></i> {% translate "View" %}
                     </span>
                   {% endif %}
                   {% if not model.perms.add and not model.perms.change and not model.perms.delete and not model.perms.view %}
-                    <span class="text-muted-foreground text-xs">No permissions</span>
+                    <span class="text-muted-foreground text-xs">{% translate "No permissions" %}</span>
                   {% endif %}
                 </div>
               </div>
@@ -47,6 +49,6 @@
 {% else %}
   <div class="text-center py-12">
     <i class="ri-lock-line text-5xl text-muted-foreground inline-block"></i>
-    <p class="text-muted-foreground mt-3">No app access</p>
+    <p class="text-muted-foreground mt-3">{% translate "No app access" %}</p>
   </div>
 {% endif %}
