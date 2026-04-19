@@ -1,2 +1,27 @@
 @import "tailwindcss";
 @import "./starting-point-ui.min.css";
+
+/* Related widget wrapper - group related buttons */
+.related-widget-wrapper {
+	@apply flex gap-1 items-center flex-wrap;
+}
+
+/* Hide the SVG images - they'll be replaced with Remix icons via JavaScript */
+.related-widget-wrapper-link img {
+	display: none;
+}
+
+.change-related::before {
+	content: "Edit";
+	@apply btn btn-default px-3 py-2 mx-1 my-3 cursor-pointer;
+}
+
+.add-related::before {
+	content: "Add";
+	@apply btn btn-secondary px-3 py-2 mx-1 my-3 cursor-pointer;
+}
+
+.view-related::before {
+	content: "View";
+	@apply btn btn-secondary px-3 py-2 mx-1 my-3 cursor-pointer;
+}

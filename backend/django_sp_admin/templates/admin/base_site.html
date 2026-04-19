@@ -76,7 +76,7 @@
         </footer>
       </div>
     </aside>
-    <main class="sidebar-page">
+    <main class="sidebar-page w-full overflow-auto">
       <header class="flex items-center gap-4 border-b p-4">
         <button
           class="btn btn-outline btn-icon"
@@ -122,7 +122,7 @@
           {% endif %}
         </nav>
       </header>
-      <div class="p-6 max-w-screen">
+      <div class="p-6">
         {% block site_content %}{% endblock %}
       </div>
       {% include './_notification.html' %}

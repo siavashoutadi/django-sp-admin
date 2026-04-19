@@ -1,0 +1,181 @@
+{% load i18n admin_urls %}
+
+<div class="js-inline-admin-formset inline-group card"
+     id="{{ inline_admin_formset.formset.prefix }}-group"
+     data-inline-type="stacked"
+     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}">
+
+  <div class="card-content space-y-4">
+    <div class="inline-header flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2 sm:pb-4 border-b gap-2 sm:gap-4">
+      {% if inline_admin_formset.is_collapsible %}
+        <details class="flex-1" open>
+          <summary class="cursor-pointer hover:text-accent">
+      {% endif %}
+
+      <h3 class="text-lg font-semibold" id="{{ inline_admin_formset.formset.prefix }}-heading">
+        {% if inline_admin_formset.formset.max_num == 1 %}
+          {{ inline_admin_formset.opts.verbose_name|capfirst }}
+        {% else %}
+          {{ inline_admin_formset.opts.verbose_name_plural|capfirst }}
+        {% endif %}
+      </h3>
+
+      {% if inline_admin_formset.is_collapsible %}
+          </summary>
+      {% endif %}
+
+      {% if inline_admin_formset.is_collapsible %}
+        </details>
+      {% endif %}
+    </div>
+
+    {{ inline_admin_formset.formset.management_form }}
+    {{ inline_admin_formset.formset.non_form_errors }}
+
+    <div class="inline-forms space-y-4">
+      {% for inline_admin_form in inline_admin_formset %}
+        <div class="inline-related border rounded-lg p-2 sm:p-4 bg-muted/5 w-full {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form{% endif %}"
+             id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% else %}{{ forloop.counter0 }}{% endif %}">
+
+          {# Close button #}
+          <div class="flex justify-end mb-3">
+            <button type="button"
+                    class="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-muted/30"
+                    data-inline-remove-btn
+                    title="Remove this item"
+                    aria-label="Remove this item">
+              <i class="ri-close-line text-lg"></i>
+            </button>
+          </div>
+
+          {% if inline_admin_form.form.non_field_errors %}
+            <div class="p-2 sm:p-3 mb-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded">
+              <div class="text-red-700 dark:text-red-200">
+                {{ inline_admin_form.form.non_field_errors }}
+              </div>
+            </div>
+          {% endif %}
+
+          {# Form fields #}
+          <div class="field-group">
+            {% for fieldset in inline_admin_form %}
+              {% for line in fieldset %}
+                {% for field in line %}
+                  {% if not field.field.widget.is_hidden %}
+                    <div class="field">
+                      {% if field.is_checkbox %}
+                        {# Checkbox - horizontal layout #}
+                        <div class="field field-horizontal items-center">
+                          <input type="checkbox" class="checkbox" name="{{ field.field.html_name }}" id="{{ field.field.id_for_label }}"{% if field.field.value %} checked{% endif %} aria-describedby="{% if field.field.help_text %}{{ field.field.id_for_label }}_help{% endif %}{% if field.errors %} {{ field.field.id_for_label }}_errors{% endif %}" />
+                          <div class="field-content">
+                            {{ field.label_tag }}
+                            {% if field.field.help_text %}
+                              <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
+                            {% endif %}
+                          </div>
+                        </div>
+                      {% else %}
+                        {# Regular fields #}
+                        {{ field.label_tag }}
+
+                        {% if field.is_readonly %}
+                          <div class="bg-muted/30 border border-muted rounded px-3 py-2 text-sm text-foreground">
+                            {{ field.contents|safe }}
+                          </div>
+                        {% else %}
+                          {# For related widget wrappers (ForeignKey, ManyToMany), render without wrapper #}
+                          {# so Django's admin.js can properly handle the view/edit/add buttons #}
+                          {% if 'related-widget-wrapper' in field.field.widget.template_name %}
+                            {{ field.field }}
+                          {% else %}
+                            {# Apply starting-point-ui classes to regular form fields #}
+                            <div class="sp-field-wrapper [&_input[type='text']]:input [&_input[type='text']]:w-full [&_input[type='email']]:input [&_input[type='email']]:w-full [&_input[type='password']]:input [&_input[type='password']]:w-full [&_input[type='number']]:input [&_input[type='number']]:w-full [&_input[type='date']]:input [&_input[type='date']]:w-full [&_input[type='time']]:input [&_input[type='time']]:w-full [&_input[type='url']]:input [&_input[type='url']]:w-full [&_select]:select [&_select]:w-full [&_textarea]:textarea [&_textarea]:w-full">
+                              {{ field.field }}
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+
+                      {# Field description (help text) #}
+                      {% if not field.is_checkbox and field.field.help_text %}
+                        <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
+                      {% endif %}
+
+                      {# Field errors #}
+                      {% if field.errors %}
+                        <div id="{{ field.field.id_for_label }}_errors" role="alert">
+                          {% for error in field.errors %}
+                            <p class="field-error">{{ error }}</p>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            {% endfor %}
+          </div>
+
+          {# Original item info #}
+          {% if inline_admin_form.original or inline_admin_form.show_url %}
+            <div class="pt-3 border-t space-y-2">
+              {% if inline_admin_form.original %}
+                <div class="text-sm text-muted-foreground">
+                  <strong>{% translate "Item" %}:</strong> {{ inline_admin_form.original }}
+                  {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+                    <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}"
+                       class="text-accent hover:text-accent/80 ml-2 inline transition-colors">
+                      {% if inline_admin_formset.has_change_permission %}
+                        <i class="ri-edit-line"></i>
+                      {% else %}
+                        <i class="ri-eye-line"></i>
+                      {% endif %}
+                    </a>
+                  {% endif %}
+                </div>
+              {% endif %}
+              {% if inline_admin_form.show_url %}
+                <div class="text-sm">
+                  <a href="{{ inline_admin_form.absolute_url }}" target="_blank" rel="noopener" class="text-accent hover:text-accent/80 transition-colors">
+                    {% translate "View on site" %} <i class="ri-external-link-line"></i>
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {# Hidden fields #}
+          {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+          {% if inline_admin_form.fk_field %}{{ inline_admin_form.fk_field.field }}{% endif %}
+
+          {# Delete checkbox #}
+          {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission and inline_admin_form.original %}
+            <div class="mt-4 pt-4 border-t">
+              <div class="field field-horizontal items-center">
+                <input type="checkbox" class="checkbox checked:bg-destructive checked:border-destructive" name="{{ inline_admin_form.deletion_field.field.html_name }}" id="{{ inline_admin_form.deletion_field.field.id_for_label }}"{% if inline_admin_form.deletion_field.field.value %} checked{% endif %} />
+                <div class="field-content">
+                  <label class="label font-medium m-0" for="{{ inline_admin_form.deletion_field.field.id_for_label }}">{% translate "Delete?" %}</label>
+                </div>
+              </div>
+              <p class="field-description text-xs text-muted-foreground mt-2">{% translate "Check this box to delete this item. You must save the form to complete the deletion." %}</p>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if inline_admin_formset.has_add_permission %}
+      <div class="pt-4 border-t">
+        <button type="button"
+                class="btn btn-sm w-full sm:w-auto cursor-pointer"
+                data-inline-add-btn
+                id="add_{{ inline_admin_formset.formset.prefix }}">
+          <i class="ri-add-line"></i>
+          {% blocktranslate with name=inline_admin_formset.opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
+        </button>
+      </div>
+    {% endif %}
+
+    {% if inline_admin_formset.is_collapsible %}</details>{% endif %}
+  </div>
+</div>

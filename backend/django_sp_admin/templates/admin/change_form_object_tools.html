@@ -1,0 +1,15 @@
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="btn btn-outline btn-sm gap-2" title="{% translate 'View change history' %}">
+    <i class="ri-history-line"></i>
+    <span class="hidden sm:inline">{% translate "History" %}</span>
+  </a>
+
+  {% if has_absolute_url %}
+    <a href="{{ absolute_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm gap-2" title="{% translate 'View on site' %}">
+      <i class="ri-external-link-line"></i>
+      <span class="hidden sm:inline">{% translate "View on site" %}</span>
+    </a>
+  {% endif %}
+{% endblock %}

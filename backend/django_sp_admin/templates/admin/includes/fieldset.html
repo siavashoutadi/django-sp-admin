@@ -1,0 +1,97 @@
+{% load i18n %}
+
+<div class="card">
+  <div class="card-content space-y-6">
+    {% if fieldset.name %}
+      {% if fieldset.is_collapsible %}
+        <details open>
+          <summary class="cursor-pointer hover:text-blue-600 flex items-center">
+            <h{{ heading_level|default:2 }} id="{{ prefix }}-{{ id_prefix}}-{{ id_suffix }}-heading" class="text-lg font-semibold">
+              {{ fieldset.name }}
+            </h{{ heading_level|default:2 }}>
+          </summary>
+      {% else %}
+        <div>
+          <h{{ heading_level|default:2 }} id="{{ prefix }}-{{ id_prefix}}-{{ id_suffix }}-heading" class="text-lg font-semibold mb-4">
+            {{ fieldset.name }}
+          </h{{ heading_level|default:2 }}>
+      {% endif %}
+
+      {% if fieldset.description %}
+        <div class="text-sm text-foreground mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          {{ fieldset.description|safe }}
+        </div>
+      {% endif %}
+    {% endif %}
+
+    {# Form fields in this fieldset #}
+    <div class="field-group">
+      {% for line in fieldset %}
+        {% if not line.has_visible_field %}
+          {# Hidden fields #}
+          {% for field in line %}
+            {% if field.field.widget.is_hidden %}
+              {{ field.field }}
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <div class="{% if not line.fields|length == 1 %}grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6{% endif %}">
+            {% for field in line %}
+              {% if not field.field.widget.is_hidden %}
+                <div class="field">
+                  {% if field.is_checkbox %}
+                    {# Checkbox - horizontal layout #}
+                    <div class="field field-horizontal">
+                      <input type="checkbox" class="checkbox" name="{{ field.field.html_name }}" id="{{ field.field.id_for_label }}"{% if field.field.value %} checked{% endif %} />
+                      {{ field.label_tag }}
+                    </div>
+                  {% else %}
+                    {# Regular fields #}
+                    {{ field.label_tag }}
+
+                    {% if field.is_readonly %}
+                      <div class="bg-muted/30 border border-muted rounded px-3 py-2 text-sm text-foreground">
+                        {{ field.contents|safe }}
+                      </div>
+                    {% else %}
+                      {# For related widget wrappers (ForeignKey, ManyToMany), render without Tailwind wrapper #}
+                      {# so Django's admin.js can properly handle the view/edit/add buttons #}
+                      {% if 'related-widget-wrapper' in field.field.widget.template_name %}
+                        {{ field.field }}
+                      {% else %}
+                        {# Apply starting-point-ui classes to regular form fields #}
+                        <div class="sp-field-wrapper [&_input[type='text']]:input [&_input[type='text']]:w-full [&_input[type='email']]:input [&_input[type='email']]:w-full [&_input[type='password']]:input [&_input[type='password']]:w-full [&_input[type='number']]:input [&_input[type='number']]:w-full [&_input[type='date']]:input [&_input[type='date']]:w-full [&_input[type='time']]:input [&_input[type='time']]:w-full [&_input[type='url']]:input [&_input[type='url']]:w-full [&_select]:select [&_select]:w-full [&_textarea]:textarea [&_textarea]:w-full">
+                          {{ field.field }}
+                        </div>
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+
+                  {# Field description (help text) #}
+                  {% if field.field.help_text %}
+                    <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
+                  {% endif %}
+
+                  {# Field errors #}
+                  {% if field.errors %}
+                    <div id="{{ field.field.id_for_label }}_errors">
+                      {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if fieldset.name and fieldset.is_collapsible %}
+        </details>
+      {% else %}
+        </div>
+      {% endif %}
+  </div>
+</div>

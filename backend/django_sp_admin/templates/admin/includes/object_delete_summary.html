@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="bg-muted/30 p-4 rounded-lg border">
+  <h3 class="text-base font-semibold mb-3">{% translate "Summary" %}</h3>
+  <ul class="space-y-2">
+    {% for model_name, object_count in model_count %}
+      <li class="flex items-center justify-between text-sm">
+        <span class="text-muted-foreground">{{ model_name|capfirst }}</span>
+        <span class="font-medium bg-muted px-2 py-1 rounded">{{ object_count }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

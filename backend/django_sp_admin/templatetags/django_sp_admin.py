@@ -331,3 +331,35 @@ def user_app_list(user):
         )
 
     return {"app_list": app_list}
+
+
+@register.filter
+def group_deleted_objects(deleted_objects):
+    """
+    Flatten and group Django's nested deleted_objects list by model type.
+
+    Each item in the list is a string like "ModelName: <a href>obj</a>"
+    or a nested list of related objects. Returns an ordered list of
+    (model_name, [object_html, ...]) tuples preserving first-seen order.
+    """
+    from collections import OrderedDict
+
+    groups = OrderedDict()
+
+    def _flatten(items):
+        for item in items:
+            if isinstance(item, (list, tuple)):
+                _flatten(item)
+            else:
+                # item is a string/SafeData like "ModelName: <a ...>Name</a>"
+                text = str(item)
+                if ": " in text:
+                    model_name, _, obj_html = text.partition(": ")
+                    model_name = model_name.strip()
+                else:
+                    model_name = "Other"
+                    obj_html = text
+                groups.setdefault(model_name, []).append(mark_safe(obj_html))
+
+    _flatten(deleted_objects)
+    return list(groups.items())

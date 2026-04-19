@@ -1,0 +1,113 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}
+  {% if add %}
+    {% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
+  {% else %}
+    {{ original|truncatewords:"18" }} | {{ opts.verbose_name }}
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+  <script src="{% static "admin/js/jquery.init.js" %}"></script>
+  <script src="{% static "admin/js/core.js" %}"></script>
+  <script src="{% static "admin/js/admin/RelatedObjectLookups.js" %}"></script>
+  <script src="{% static "admin/js/popup_response.js" %}"></script>
+{% endblock %}
+
+{% block site_content %}
+  <div id="content-main" class="flex-1 w-full overflow-hidden">
+    {% if not is_popup %}
+      {% block breadcrumbs %}
+      <nav class="breadcrumb mb-6">
+        <a href="{% url 'admin:index' %}" class="breadcrumb-link">{% translate 'Home' %}</a>
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        <a href="{% url 'admin:app_list' app_label=opts.app_label %}" class="breadcrumb-link">{{ opts.app_config.verbose_name }}</a>
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        {% if has_view_permission %}
+          <a href="{% url opts|admin_urlname:'changelist' %}" class="breadcrumb-link">{{ opts.verbose_name_plural|capfirst }}</a>
+        {% else %}
+          <span class="breadcrumb-page">{{ opts.verbose_name_plural|capfirst }}</span>
+        {% endif %}
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        <span class="breadcrumb-page" aria-current="page">{% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}</span>
+      </nav>
+      {% endblock %}
+    {% endif %}
+
+    {% block object-tools %}
+      {% if change and not is_popup %}
+        <div class="px-4 py-3 border-b flex items-center justify-between">
+          <h1 class="text-xl font-bold">{{ opts.verbose_name|capfirst }}</h1>
+          <div class="space-x-2 flex">
+            {% block object-tools-items %}
+              {% change_form_object_tools %}
+            {% endblock %}
+          </div>
+        </div>
+      {% endif %}
+    {% endblock %}
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>
+      {% csrf_token %}
+
+      <div class="py-6 space-y-6">
+        {% block form_top %}{% endblock %}
+
+        {# Hidden inputs #}
+        {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+        {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+        {% if source_model %}<input type="hidden" name="{{ source_model_var }}" value="{{ source_model }}">{% endif %}
+
+        {# Save buttons at top (if configured) #}
+        {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+
+        {# Error messages #}
+        {% if errors %}
+          <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p class="text-red-800 dark:text-red-200 font-medium mb-2">
+              {% blocktranslate count counter=errors|length %}
+                Please correct the error below.
+              {% plural %}
+                Please correct the errors below.
+              {% endblocktranslate %}
+            </p>
+            <div class="text-red-700 dark:text-red-300 text-sm">
+              {{ adminform.form.non_field_errors }}
+            </div>
+          </div>
+        {% endif %}
+
+        {# Form fieldsets #}
+        <div class="space-y-6">
+          {% block field_sets %}
+          {% for fieldset in adminform %}
+            {% include "admin/includes/fieldset.html" with heading_level=2 prefix="fieldset" id_prefix=0 id_suffix=forloop.counter0 %}
+          {% endfor %}
+          {% endblock %}
+        </div>
+
+        {% block after_field_sets %}{% endblock %}
+
+        {# Inline related objects (ForeignKey, ManyToMany) #}
+        {% block inline_field_sets %}
+        {% for inline_admin_formset in inline_admin_formsets %}
+          {% include inline_admin_formset.opts.template %}
+        {% endfor %}
+        {% endblock %}
+
+        {% block after_related_objects %}{% endblock %}
+
+        {# Save buttons at bottom #}
+        {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'js/django_sp_admin/change_form.js' %}"></script>
+{% endblock %}

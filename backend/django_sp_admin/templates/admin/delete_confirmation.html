@@ -1,0 +1,135 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static django_sp_admin %}
+
+{% block title %}{% blocktrans %}Delete {{ object_name }} - {{ object }}{% endblocktrans %}{% endblock %}
+
+{% block site_content %}
+<div id="content-main" class="flex-1">
+  {% if not is_popup %}
+    {% block breadcrumbs %}
+    <nav class="breadcrumb mb-6">
+      <a href="{% url 'admin:index' %}" class="breadcrumb-link">{% translate 'Home' %}</a>
+      <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+      <a href="{% url 'admin:app_list' app_label=opts.app_label %}" class="breadcrumb-link">{{ opts.app_config.verbose_name }}</a>
+      <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+      <a href="{% url opts|admin_urlname:'changelist' %}" class="breadcrumb-link">{{ opts.verbose_name_plural|capfirst }}</a>
+      <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+      <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}" class="breadcrumb-link">{{ object|truncatewords:"18" }}</a>
+      <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+      <span class="breadcrumb-page" aria-current="page">{% translate 'Delete' %}</span>
+    </nav>
+    {% endblock %}
+  {% endif %}
+
+  <div class="p-6 max-w-4xl">
+    {% if perms_lacking %}
+      {% block delete_forbidden %}
+        <div class="card mb-6">
+          <div class="card-content">
+            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+              <h2 class="text-lg font-semibold text-yellow-900 dark:text-yellow-200 mb-2">
+                <i class="ri-alert-line mr-2"></i>
+                {% translate "Permission Denied" %}
+              </h2>
+              <p class="text-yellow-800 dark:text-yellow-300 text-sm">
+                {% blocktranslate with object=object object_name=object_name %}
+                  Deleting the {{ object_name }} "{{ object }}" would result in deleting related objects,
+                  but your account doesn't have permission to delete the following types of objects:
+                {% endblocktranslate %}
+              </p>
+            </div>
+            <ul id="deleted-objects" class="space-y-2">
+              {{ perms_lacking|unordered_list }}
+            </ul>
+          </div>
+        </div>
+      {% endblock %}
+
+    {% elif protected %}
+      {% block delete_protected %}
+        <div class="card mb-6">
+          <div class="card-content">
+            <div class="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
+              <h2 class="text-lg font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                <i class="ri-shield-alert-line mr-2"></i>
+                {% translate "Protected Objects" %}
+              </h2>
+              <p class="text-orange-800 dark:text-orange-300 text-sm">
+                {% blocktranslate with object=object object_name=object_name %}
+                  Deleting the {{ object_name }} "{{ object }}" would require deleting the following
+                  protected related objects:
+                {% endblocktranslate %}
+              </p>
+            </div>
+            <ul id="deleted-objects" class="space-y-2">
+              {{ protected|unordered_list }}
+            </ul>
+          </div>
+        </div>
+      {% endblock %}
+
+    {% else %}
+      {% block delete_confirm %}
+        <div class="card mb-6">
+          <div class="card-content space-y-6">
+            <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <h2 class="text-lg font-semibold text-red-900 dark:text-red-200 mb-2">
+                <i class="ri-delete-bin-line mr-2"></i>
+                {% translate "Confirm Deletion" %}
+              </h2>
+              <p class="text-red-800 dark:text-red-300 text-sm">
+                {% blocktranslate with object=object object_name=object_name %}
+                  Are you sure you want to delete the {{ object_name }} "{{ object }}"?
+                  All of the following related items will be deleted:
+                {% endblocktranslate %}
+              </p>
+            </div>
+
+            {# Summary of what will be deleted #}
+            {% include "admin/includes/object_delete_summary.html" %}
+
+            {# Detailed list of deleted objects grouped by model type #}
+            <div id="deleted-objects" class="space-y-3">
+              <h3 class="text-base font-semibold">{% translate "Objects to delete" %}</h3>
+              {% for model_name, objects in deleted_objects|group_deleted_objects %}
+                <div class="rounded-lg border overflow-hidden">
+                  <div class="px-4 py-2 bg-muted/50 border-b flex items-center justify-between">
+                    <span class="text-sm font-semibold">{{ model_name }}</span>
+                    <span class="text-xs text-muted-foreground">{{ objects|length }}</span>
+                  </div>
+                  <ul class="divide-y divide-border">
+                    {% for obj_html in objects %}
+                      <li class="px-4 py-2 text-sm [&_a]:text-primary [&_a]:hover:underline">
+                        {{ obj_html }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endfor %}
+            </div>
+
+            {# Confirmation form #}
+            <form method="post" class="mt-6">
+              {% csrf_token %}
+              <input type="hidden" name="post" value="yes">
+              {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+              {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+
+              <div class="flex gap-3">
+                <button type="submit" class="btn btn-destructive gap-2">
+                  <i class="ri-delete-bin-line"></i>
+                  {% translate 'Yes, delete it' %}
+                </button>
+                <a role="button" href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}" class="btn btn-outline cancel-link gap-2">
+                  <i class="ri-close-line"></i>
+                  {% translate "Cancel" %}
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endblock %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
