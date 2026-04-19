@@ -1,6 +1,16 @@
 from django.contrib import admin
+from django.forms import RadioSelect
 
-from admin_test.models import Author, Category, Comment, Post, Tag
+from admin_test.models import (
+    Author,
+    Category,
+    Comment,
+    EventLog,
+    EventSchedule,
+    Poll,
+    Post,
+    Tag,
+)
 
 
 # Inline configurations
@@ -99,7 +109,90 @@ class CommentAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
 
+
+@admin.register(EventSchedule)
+class EventScheduleAdmin(admin.ModelAdmin):
+    """Admin interface for EventSchedule model with radio widget for event type."""
+
+    list_display = ["title", "event_type", "event_date", "event_time", "location"]
+    list_filter = ["event_type", "event_date"]
+    date_hierarchy = "event_date"
+    search_fields = ["title", "location"]
+    readonly_fields = ["created_at", "updated_at"]
+    ordering = ["-event_date", "-event_time"]
+
     fieldsets = (
-        ("Comment Information", {"fields": ("post", "author", "content")}),
-        ("Moderation", {"fields": ("is_approved", "created_at", "updated_at")}),
+        ("Event Information", {"fields": ("title", "location", "description")}),
+        (
+            "Event Details",
+            {
+                "fields": ("event_type", "event_date", "event_time"),
+                "description": "Select event type using radio buttons below",
+            },
+        ),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "event_type":
+            kwargs["widget"] = RadioSelect()
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+
+@admin.register(Poll)
+class PollAdmin(admin.ModelAdmin):
+    """Admin interface for Poll model with radio widget for status."""
+
+    list_display = ["title", "status", "allow_multiple_votes", "created_at"]
+    list_filter = ["status", "allow_multiple_votes", "created_at"]
+    date_hierarchy = "created_at"
+    search_fields = ["title", "question"]
+    readonly_fields = ["created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+    fieldsets = (
+        ("Poll Information", {"fields": ("title", "question")}),
+        (
+            "Settings",
+            {
+                "fields": ("status", "allow_multiple_votes"),
+                "description": "Select poll status using radio buttons below",
+            },
+        ),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "status":
+            kwargs["widget"] = RadioSelect()
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+
+@admin.register(EventLog)
+class EventLogAdmin(admin.ModelAdmin):
+    """Admin interface for EventLog model with date and time fields."""
+
+    list_display = ["event_name", "log_level", "log_date", "log_time", "user"]
+    list_filter = ["log_level", "log_date"]
+    date_hierarchy = "log_date"
+    search_fields = ["event_name", "message", "user"]
+    readonly_fields = ["created_at"]
+    ordering = ["-log_date", "-log_time"]
+
+    fieldsets = (
+        ("Log Information", {"fields": ("event_name", "message", "user")}),
+        (
+            "Log Details",
+            {
+                "fields": ("log_level", "log_date", "log_time"),
+                "description": "Select log level using radio buttons below",
+            },
+        ),
+        ("Timestamps", {"fields": ("created_at",)}),
+    )
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "log_level":
+            kwargs["widget"] = RadioSelect()
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+

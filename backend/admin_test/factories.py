@@ -1,7 +1,17 @@
 import factory
+from django.utils.text import slugify
 from faker import Faker
 
-from admin_test.models import Author, Category, Comment, Post, Tag
+from admin_test.models import (
+    Author,
+    Category,
+    Comment,
+    EventLog,
+    EventSchedule,
+    Poll,
+    Post,
+    Tag,
+)
 
 fake = Faker()
 
@@ -13,7 +23,7 @@ class AuthorFactory(factory.django.DjangoModelFactory):
         model = Author
 
     name = factory.Faker("name")
-    email = factory.Sequence(lambda n: f"author{n}@example.com")
+    email = factory.Faker("email")
     bio = factory.Faker("paragraph", nb_sentences=3)
 
 
@@ -23,8 +33,8 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
 
-    name = factory.Sequence(lambda n: f"Category {n}")
-    slug = factory.LazyAttribute(lambda obj: obj.name.replace(" ", "-").lower())
+    name = factory.Faker("words", nb=2, ext_word_list=None)
+    slug = factory.LazyAttribute(lambda obj: slugify(obj.name)[:50])
     description = factory.Faker("paragraph", nb_sentences=2)
 
 
@@ -34,7 +44,7 @@ class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tag
 
-    name = factory.Sequence(lambda n: f"Tag {n}")
+    name = factory.Faker("word")
     slug = factory.LazyAttribute(lambda obj: obj.name.replace(" ", "-").lower())
 
 
@@ -92,4 +102,56 @@ class CommentFactory(factory.django.DjangoModelFactory):
     author = factory.SubFactory(AuthorFactory)
     content = factory.Faker("paragraph", nb_sentences=4)
     is_approved = factory.Faker("boolean", chance_of_getting_true=80)
+    created_at = factory.Faker("date_time_this_year", tzinfo=None)
+
+
+class EventScheduleFactory(factory.django.DjangoModelFactory):
+    """Factory for creating EventSchedule objects."""
+
+    class Meta:
+        model = EventSchedule
+
+    title = factory.Faker("sentence", nb_words=4)
+    event_type = factory.Faker(
+        "random_element",
+        elements=["conference", "workshop", "webinar", "meeting", "training"],
+    )
+    event_date = factory.Faker("date_object")
+    event_time = factory.Faker("time_object")
+    location = factory.Faker("city")
+    description = factory.Faker("paragraph", nb_sentences=3)
+    created_at = factory.Faker("date_time_this_year", tzinfo=None)
+    updated_at = factory.Faker("date_time_this_year", tzinfo=None)
+
+
+class PollFactory(factory.django.DjangoModelFactory):
+    """Factory for creating Poll objects."""
+
+    class Meta:
+        model = Poll
+
+    title = factory.Faker("sentence", nb_words=5)
+    question = factory.Faker("sentence", nb_words=10)
+    status = factory.Faker(
+        "random_element", elements=["draft", "active", "closed", "archived"]
+    )
+    allow_multiple_votes = factory.Faker("boolean", chance_of_getting_true=30)
+    created_at = factory.Faker("date_time_this_year", tzinfo=None)
+    updated_at = factory.Faker("date_time_this_year", tzinfo=None)
+
+
+class EventLogFactory(factory.django.DjangoModelFactory):
+    """Factory for creating EventLog objects."""
+
+    class Meta:
+        model = EventLog
+
+    event_name = factory.Faker("sentence", nb_words=3)
+    log_level = factory.Faker(
+        "random_element", elements=["debug", "info", "warning", "error", "critical"]
+    )
+    log_date = factory.Faker("date_object")
+    log_time = factory.Faker("time_object")
+    message = factory.Faker("paragraph", nb_sentences=2)
+    user = factory.Faker("user_name")
     created_at = factory.Faker("date_time_this_year", tzinfo=None)
