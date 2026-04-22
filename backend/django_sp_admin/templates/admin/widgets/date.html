@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="input-group max-w-sm">
+  <span class="input-group-addon">
+    <i class="ri-calendar-line"></i>
+  </span>
+  <input
+    type="date"
+    class="input"
+    name="{{ widget.name }}"
+    value="{% if widget.value %}{{ widget.value|date:'Y-m-d' }}{% endif %}"
+    {% include "django/forms/widgets/attrs.html" %}>
+</div>

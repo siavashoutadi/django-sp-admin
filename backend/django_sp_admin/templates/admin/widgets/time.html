@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="input-group max-w-sm">
+  <span class="input-group-addon">
+    <i class="ri-time-line"></i>
+  </span>
+  <input
+    type="time"
+    class="input"
+    name="{{ widget.name }}"
+    value="{% if widget.value %}{{ widget.value|date:'H:i' }}{% endif %}"
+    {% include "django/forms/widgets/attrs.html" %}>
+</div>
