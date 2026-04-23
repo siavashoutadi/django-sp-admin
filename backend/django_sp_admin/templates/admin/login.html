@@ -57,10 +57,8 @@
             {% if form.username.errors %}aria-invalid="true" aria-describedby="id_username_errors"{% endif %}
           />
           {% if form.username.errors %}
-            <div id="id_username_errors">
-              {% for error in form.username.errors %}
-                <p class="field-error">{{ error }}</p>
-              {% endfor %}
+            <div id="id_username_errors" class="text-destructive">
+              {{ form.username.errors|safe }}
             </div>
           {% endif %}
         </div>
@@ -79,10 +77,8 @@
           />
           <input type="hidden" name="next" value="{{ next }}" />
           {% if form.password.errors %}
-            <div id="id_password_errors">
-              {% for error in form.password.errors %}
-                <p class="field-error">{{ error }}</p>
-              {% endfor %}
+            <div id="id_password_errors" class="text-destructive">
+              {{ form.password.errors|safe }}
             </div>
           {% endif %}
         </div>

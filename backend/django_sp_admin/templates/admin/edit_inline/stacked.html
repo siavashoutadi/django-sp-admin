@@ -103,10 +103,8 @@
 
                       {# Field errors #}
                       {% if field.errors %}
-                        <div id="{{ field.field.id_for_label }}_errors" role="alert">
-                          {% for error in field.errors %}
-                            <p class="field-error">{{ error }}</p>
-                          {% endfor %}
+                        <div id="{{ field.field.id_for_label }}_errors" role="alert" class="text-destructive">
+                          {{ field.errors|safe }}
                         </div>
                       {% endif %}
                     </div>
