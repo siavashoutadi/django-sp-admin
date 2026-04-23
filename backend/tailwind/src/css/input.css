@@ -25,3 +25,129 @@
 	content: "View";
 	@apply btn btn-secondary px-3 py-2 mx-1 my-3 cursor-pointer;
 }
+
+/* Starting Point UI Time Picker Styles */
+
+/* Container */
+[data-tp-container] {
+	@layer l1.l2 {
+		@apply max-w-sm w-full;
+	}
+}
+
+/* Menu wrapper */
+[data-tp-menu] {
+	@layer l1.l2 {
+		@apply max-w-sm w-full p-6;
+	}
+}
+
+/* Title */
+[data-tp-title] {
+	@layer l1.l2 {
+		@apply text-2xl font-bold tracking-tight mb-6 text-center;
+	}
+}
+
+/* Display panel showing selected time */
+[data-tp-display-panel] {
+	@layer l1.l2 {
+		@apply bg-muted rounded-lg p-6 mb-6 text-center;
+	}
+}
+
+/* Label above the time display */
+[data-tp-display-panel] > div:first-child {
+	@layer l1.l2 {
+		@apply text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2;
+	}
+}
+
+/* Time display output */
+[data-tp-display] {
+	@layer l1.l2 {
+		@apply text-5xl font-bold tracking-tight;
+	}
+}
+
+/* Field container */
+[data-tp-field] {
+	@layer l1.l2 {
+		@apply py-6;
+	}
+}
+
+/* Field label */
+[data-tp-field] > label {
+	@layer l1.l2 {
+		@apply text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 block;
+	}
+}
+
+/* Spinners wrapper */
+[data-tp-spinners] {
+	@layer l1.l2 {
+		@apply flex items-center justify-center gap-4;
+	}
+}
+
+/* Individual spinner */
+[data-tp-spinner] {
+	@layer l1.l2 {
+		@apply flex flex-col items-center gap-2;
+	}
+}
+
+/* Spinner input field */
+[data-tp-hours],
+[data-tp-minutes] {
+	@layer l1.l2 {
+		@apply w-12 px-1 py-2 text-center text-lg font-semibold border rounded-md border-input bg-background outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px];
+
+		/* Hide default number input spinners */
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		&[type="number"] {
+			-moz-appearance: textfield;
+		}
+	}
+}
+
+/* Spinner button container */
+[data-tp-spinner-buttons] {
+	@layer l1.l2 {
+		@apply flex flex-col gap-1;
+	}
+}
+
+/* Spinner button */
+[data-tp-spinner-btn] {
+	@layer l1.l2 {
+		@apply p-4 w-7 h-6 flex items-center justify-center rounded-sm bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none;
+	}
+}
+
+/* Icon sizing */
+[data-tp-spinner-btn] i {
+	@layer l1.l2 {
+		@apply text-lg;
+	}
+}
+
+/* Time separator */
+[data-tp-separator] {
+	@layer l1.l2 {
+		@apply text-3xl font-bold mb-2;
+	}
+}
+
+/* Action buttons container */
+[data-tp-buttons] {
+	@layer l1.l2 {
+		@apply flex gap-3 justify-center mt-6;
+	}
+}

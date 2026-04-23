@@ -1,13 +1,67 @@
 {% load i18n %}
 
-<div class="input-group max-w-sm">
-  <span class="input-group-addon">
-    <i class="ri-time-line"></i>
-  </span>
-  <input
-    type="time"
-    class="input"
-    name="{{ widget.name }}"
-    value="{% if widget.value %}{{ widget.value|date:'H:i' }}{% endif %}"
-    {% include "django/forms/widgets/attrs.html" %}>
+<div class="dropdown" data-sp-placement="bottom" data-tp-container data-tp-widget-id="{{ widget.attrs.id }}">
+  <div class="input-group max-w-sm" data-sp-toggle="dropdown">
+    <p></p>
+    <input
+      id="{{ widget.attrs.id }}-input"
+      type="time"
+      class="input"
+      name="{{ widget.name }}"
+      value="{{ widget.value|default_if_none:"00:00" }}"
+      {% include "django/forms/widgets/attrs.html" %}
+      readonly
+      data-tp-output>
+
+    <button class="input-group-btn-icon p-2" type="button" aria-label="Set time" data-tp-open>
+      <i class="ri-time-line"></i>
+    </button>
+  </div>
+  <div class="dropdown-menu" data-tp-menu>
+    <h2 data-tp-title>Set Time</h2>
+
+    <div data-tp-display-panel>
+      <div>Selected Time</div>
+      <div data-tp-display>00:00</div>
+    </div>
+
+    <div data-tp-field>
+      <div data-tp-spinners>
+        <div data-tp-spinner="hours">
+          <div data-tp-spinner-buttons>
+            <button type="button" data-tp-spinner-btn="up" aria-label="Increase hours">
+              <i class="ri-arrow-up-s-line"></i>
+            </button>
+          </div>
+          <input type="number" id="{{ widget.attrs.id }}-hours" data-tp-hours min="0" max="23" value="00" data-step="1">
+          <div data-tp-spinner-buttons>
+            <button type="button" data-tp-spinner-btn="down" aria-label="Decrease hours">
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <div data-tp-separator>:</div>
+
+        <div data-tp-spinner="minutes">
+          <div data-tp-spinner-buttons>
+            <button type="button" data-tp-spinner-btn="up" aria-label="Increase minutes">
+              <i class="ri-arrow-up-s-line"></i>
+            </button>
+          </div>
+          <input type="number" id="{{ widget.attrs.id }}-minutes" data-tp-minutes min="0" max="59" value="00" data-step="1">
+          <div data-tp-spinner-buttons>
+            <button type="button" data-tp-spinner-btn="down" aria-label="Decrease minutes">
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-tp-buttons>
+      <button class="btn btn-secondary" type="button" data-tp-reset>Reset</button>
+      <button class="btn btn-primary" type="button" data-tp-submit>Set</button>
+    </div>
+  </div>
 </div>

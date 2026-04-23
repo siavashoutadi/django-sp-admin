@@ -16,6 +16,8 @@
   <script src="{% static "admin/js/core.js" %}"></script>
   <script src="{% static "admin/js/admin/RelatedObjectLookups.js" %}"></script>
   <script src="{% static "admin/js/popup_response.js" %}"></script>
+  <script src="{% static 'js/django_sp_admin/starting-point-ui.min.js' %}"></script>
+  <script src="{% static 'js/django_sp_admin/timepicker.js' %}"></script>
 {% endblock %}
 
 {% block site_content %}
@@ -106,8 +108,4 @@
       </div>
     </form>
   </div>
-{% endblock %}
-
-{% block extra_scripts %}
-  <script src="{% static 'js/django_sp_admin/change_form.js' %}"></script>
 {% endblock %}
