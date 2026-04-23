@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', handleOpenButton);
   document.addEventListener('click', handleSubmitButton);
   document.addEventListener('click', handleResetButton);
+  document.addEventListener('click', handleNowButton);
 
   document.addEventListener('mousedown', handleSpinnerButtonMouseDown);
   document.addEventListener('mouseup', handleSpinnerButtonMouseUp);
@@ -284,6 +285,32 @@ function handleResetButton(e) {
 
   setSpinnerValue(hoursInput, initialTime.hours, 23);
   setSpinnerValue(minutesInput, initialTime.minutes, 59);
+
+  // Update display
+  updateDisplay(container);
+}
+
+/**
+ * Handle now button - set spinners to current time
+ */
+function handleNowButton(e) {
+  const btn = e.target.closest('[data-tp-now]');
+  if (!btn) return;
+
+  const container = getContainer(btn);
+  if (!container) return;
+
+  // Get current time
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  // Set spinner inputs to current time
+  const hoursInput = container.querySelector('[data-tp-hours]');
+  const minutesInput = container.querySelector('[data-tp-minutes]');
+
+  setSpinnerValue(hoursInput, hours, 23);
+  setSpinnerValue(minutesInput, minutes, 59);
 
   // Update display
   updateDisplay(container);
