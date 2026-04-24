@@ -1,10 +1,63 @@
 {% load i18n %}
 
-<div class="input-group max-w-sm">
-  <input
-    type="date"
-    class="input"
-    name="{{ widget.name }}"
-    value="{{ widget.value|default_if_none:'' }}"
-    {% include "django/forms/widgets/attrs.html" %}>
+<div class="dropdown" data-sp-placement="auto" data-dp-container data-dp-widget-id="{{ widget.attrs.id }}">
+  <div class="input-group max-w-xs sm:max-w-sm" data-sp-toggle="dropdown">
+    <input
+      id="{{ widget.attrs.id }}-output"
+      type="date"
+      class="input"
+      name="{{ widget.name }}"
+      value="{{ widget.value|default_if_none:"" }}"
+      {% include "django/forms/widgets/attrs.html" %}
+      readonly
+      data-dp-output>
+
+    <button class="input-group-btn-icon p-2" type="button" aria-label="Set date" data-dp-open>
+      <i class="ri-calendar-line"></i>
+    </button>
+  </div>
+  <div class="dropdown-menu" data-dp-menu>
+    <div class="flex items-center justify-between mb-6" data-dp-calendar-header>
+      <button class="btn btn-ghost btn-icon-sm p-2" type="button" aria-label="Previous month" data-dp-nav="prev">
+        <i class="ri-arrow-left-s-line"></i>
+      </button>
+      <div class="flex flex-col items-center gap-2">
+        <h2 class="text-sm sm:text-lg font-semibold min-w-32 sm:min-w-48 text-center" data-dp-month-year>{{ "now"|date:"F Y" }}</h2>
+        <div class="flex gap-1 sm:gap-2 items-center text-xs sm:text-sm">
+          <select class="select select-xs w-20 sm:w-24 bg-muted" data-dp-month-select aria-label="Select month">
+            <option value="0">Jan</option>
+            <option value="1">Feb</option>
+            <option value="2">Mar</option>
+            <option value="3">Apr</option>
+            <option value="4">May</option>
+            <option value="5">Jun</option>
+            <option value="6">Jul</option>
+            <option value="7">Aug</option>
+            <option value="8">Sep</option>
+            <option value="9">Oct</option>
+            <option value="10">Nov</option>
+            <option value="11">Dec</option>
+          </select>
+          <input type="number" class="input input-xs w-16 sm:w-20" data-dp-year-select min="1900" max="2100" aria-label="Select year" />
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-icon-sm p-2" type="button" aria-label="Next month" data-dp-nav="next">
+        <i class="ri-arrow-right-s-line"></i>
+      </button>
+    </div>
+
+    <div data-dp-field class="mb-6">
+      <div data-dp-calendar class="grid grid-cols-7 gap-1 sm:gap-2">
+        <!-- JavaScript will populate calendar cells here -->
+      </div>
+    </div>
+
+    <div data-dp-buttons>
+      <div class="flex gap-2 justify-center">
+        <button class="btn btn-ghost btn-sm" type="button" data-dp-yesterday>{% trans "Yesterday" %}</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-dp-today>{% trans "Today" %}</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-dp-tomorrow>{% trans "Tomorrow" %}</button>
+      </div>
+    </div>
+  </div>
 </div>
