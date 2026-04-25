@@ -3,7 +3,7 @@
 {% if show %}
 <div class="mb-6 overflow-x-auto">
   <div class="flex items-center gap-2 p-3 bg-muted/30 rounded-md">
-    <nav class="flex items-center gap-1" aria-labelledby="date-hierarchy-label">
+    <nav class="flex flex-wrap items-center gap-1" aria-labelledby="date-hierarchy-label">
       <span id="date-hierarchy-label" class="sr-only">{% blocktranslate %}Filter by {{ field_name }}{% endblocktranslate %}</span>
       {% block date-hierarchy-toplinks %}
         {% block date-hierarchy-back %}
@@ -25,11 +25,12 @@
                 {% else %}
                   class="btn btn-ghost btn-sm"
                 {% endif %}
+                class="btn btn-ghost btn-sm min-w-14 text-center"
               >
                 {{ choice.title }}
               </a>
             {% else %}
-              <span {% if choice.selected %}class="btn btn-outline btn-sm" aria-current="page"{% else %}class="btn btn-ghost btn-sm"{% endif %}>{{ choice.title }}</span>
+              <span {% if choice.selected %}class="btn btn-outline btn-sm min-w-14 text-center" aria-current="page"{% else %}class="btn btn-ghost btn-sm min-w-14 text-center"{% endif %}>{{ choice.title }}</span>
             {% endif %}
           {% endfor %}
         {% endblock %}
