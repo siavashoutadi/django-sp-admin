@@ -12,6 +12,7 @@ dependencies = [
     "django-typer>=3.7.1",
     "ipdb>=0.13.13",
     "ipython>=9.12.0",
+    "pillow>=12.2.0",
     "psycopg2-binary>=2.9.11",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.44.0",

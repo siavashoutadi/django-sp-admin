@@ -5,23 +5,39 @@ from django_typer.management import TyperCommand, command
 
 from admin_test.factories import (
     AuthorFactory,
+    BooleanTestModelFactory,
     CategoryFactory,
+    ChoiceTestModelFactory,
     CommentFactory,
+    DateTimeComprehensiveModelFactory,
     EventLogFactory,
     EventScheduleFactory,
+    IdentifierModelFactory,
+    NumberTestModelFactory,
     PollFactory,
     PostFactory,
+    RelationshipTestModelFactory,
     TagFactory,
+    TextFieldsModelFactory,
+    URLEmailFileModelFactory,
 )
 from admin_test.models import (
     Author,
+    BooleanTestModel,
     Category,
+    ChoiceTestModel,
     Comment,
+    DateTimeComprehensiveModel,
     EventLog,
     EventSchedule,
+    IdentifierModel,
+    NumberTestModel,
     Poll,
     Post,
+    RelationshipTestModel,
     Tag,
+    TextFieldsModel,
+    URLEmailFileModel,
 )
 
 
@@ -104,6 +120,16 @@ class Command(TyperCommand):
         # Clear existing data if requested
         if clear:
             typer.echo("🗑️  Clearing existing data...")
+            # New models
+            NumberTestModel.objects.all().delete()
+            BooleanTestModel.objects.all().delete()
+            URLEmailFileModel.objects.all().delete()
+            ChoiceTestModel.objects.all().delete()
+            DateTimeComprehensiveModel.objects.all().delete()
+            IdentifierModel.objects.all().delete()
+            TextFieldsModel.objects.all().delete()
+            RelationshipTestModel.objects.all().delete()
+            # Existing models
             Post.objects.all().delete()
             Comment.objects.all().delete()
             Author.objects.all().delete()
@@ -114,6 +140,58 @@ class Command(TyperCommand):
             EventLog.objects.all().delete()
             typer.echo("✓ Data cleared")
             typer.echo("")
+        # New models seeding
+        typer.echo("🔢 Creating NumberTestModel records...")
+        number_test_objs = NumberTestModelFactory.create_batch(10)
+        typer.echo(f"✓ Created {len(number_test_objs)} NumberTestModel records")
+
+        typer.echo("✅ Creating BooleanTestModel records...")
+        boolean_test_objs = BooleanTestModelFactory.create_batch(10)
+        typer.echo(f"✓ Created {len(boolean_test_objs)} BooleanTestModel records")
+
+        typer.echo("🌐 Creating URLEmailFileModel records...")
+        url_email_file_objs = URLEmailFileModelFactory.create_batch(5)
+        typer.echo(f"✓ Created {len(url_email_file_objs)} URLEmailFileModel records")
+
+        typer.echo("🎚️  Creating ChoiceTestModel records...")
+        choice_test_objs = ChoiceTestModelFactory.create_batch(8)
+        typer.echo(f"✓ Created {len(choice_test_objs)} ChoiceTestModel records")
+
+        typer.echo("⏰ Creating DateTimeComprehensiveModel records...")
+        datetime_comprehensive_objs = DateTimeComprehensiveModelFactory.create_batch(6)
+        typer.echo(
+            f"✓ Created {len(datetime_comprehensive_objs)} DateTimeComprehensiveModel records"
+        )
+
+        typer.echo("🆔 Creating IdentifierModel records...")
+        identifier_objs = IdentifierModelFactory.create_batch(7)
+        typer.echo(f"✓ Created {len(identifier_objs)} IdentifierModel records")
+
+        typer.echo("📝 Creating TextFieldsModel records...")
+        textfields_objs = TextFieldsModelFactory.create_batch(10)
+        typer.echo(f"✓ Created {len(textfields_objs)} TextFieldsModel records")
+
+        typer.echo("🔗 Creating RelationshipTestModel records...")
+        # For relationships, assign random authors, categories, tags
+        import random
+
+        for _ in range(8):
+            obj = RelationshipTestModelFactory()
+            # Assign random author, categories, tags if available
+            if Author.objects.exists():
+                obj.author = random.choice(list(Author.objects.all()))
+                obj.save()
+            if Category.objects.exists():
+                obj.categories.set(
+                    random.sample(
+                        list(Category.objects.all()), min(2, Category.objects.count())
+                    )
+                )
+            if Tag.objects.exists():
+                obj.tags.set(
+                    random.sample(list(Tag.objects.all()), min(2, Tag.objects.count()))
+                )
+        typer.echo(f"✓ Created 8 RelationshipTestModel records")
 
         # Validate inputs
         if posts < 1 or posts > 1000:
@@ -196,6 +274,18 @@ class Command(TyperCommand):
         typer.echo(f"   Event Schedules: {EventSchedule.objects.count()}")
         typer.echo(f"   Polls: {Poll.objects.count()}")
         typer.echo(f"   Event Logs: {EventLog.objects.count()}")
+        typer.echo(f"   NumberTestModels: {NumberTestModel.objects.count()}")
+        typer.echo(f"   BooleanTestModels: {BooleanTestModel.objects.count()}")
+        typer.echo(f"   URLEmailFileModels: {URLEmailFileModel.objects.count()}")
+        typer.echo(f"   ChoiceTestModels: {ChoiceTestModel.objects.count()}")
+        typer.echo(
+            f"   DateTimeComprehensiveModels: {DateTimeComprehensiveModel.objects.count()}"
+        )
+        typer.echo(f"   IdentifierModels: {IdentifierModel.objects.count()}")
+        typer.echo(f"   TextFieldsModels: {TextFieldsModel.objects.count()}")
+        typer.echo(
+            f"   RelationshipTestModels: {RelationshipTestModel.objects.count()}"
+        )
 
         # Calculate relationships
         posts_with_comments = (
@@ -235,6 +325,14 @@ class Command(TyperCommand):
                 raise typer.Exit()
 
         typer.echo("🗑️  Deleting all data...")
+        NumberTestModel.objects.all().delete()
+        BooleanTestModel.objects.all().delete()
+        URLEmailFileModel.objects.all().delete()
+        ChoiceTestModel.objects.all().delete()
+        DateTimeComprehensiveModel.objects.all().delete()
+        IdentifierModel.objects.all().delete()
+        TextFieldsModel.objects.all().delete()
+        RelationshipTestModel.objects.all().delete()
         Post.objects.all().delete()
         Comment.objects.all().delete()
         Author.objects.all().delete()

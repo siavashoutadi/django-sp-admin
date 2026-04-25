@@ -4,14 +4,126 @@ from faker import Faker
 
 from admin_test.models import (
     Author,
+    BooleanTestModel,
     Category,
+    ChoiceTestModel,
     Comment,
+    DateTimeComprehensiveModel,
     EventLog,
     EventSchedule,
+    IdentifierModel,
+    NumberTestModel,
     Poll,
     Post,
+    RelationshipTestModel,
     Tag,
+    TextFieldsModel,
+    URLEmailFileModel,
 )
+
+# --- New Model Factories ---
+
+
+class NumberTestModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = NumberTestModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    integer_field = factory.Faker("random_int", min=-100, max=100)
+    positive_integer = factory.Faker("random_int", min=0, max=100)
+    big_integer = factory.Faker("random_int", min=0, max=999999)
+    small_integer = factory.Faker("random_int", min=-32768, max=32767)
+    decimal_field = factory.Faker(
+        "pydecimal", left_digits=5, right_digits=2, positive=True
+    )
+    float_field = factory.Faker("pyfloat", left_digits=3, right_digits=2, positive=True)
+
+
+class BooleanTestModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = BooleanTestModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    is_active = factory.Faker("boolean")
+    is_published = factory.Faker("boolean")
+    is_verified = factory.Faker("boolean")
+    requires_approval = factory.Faker("boolean")
+    is_archived = factory.Faker("boolean")
+
+
+class URLEmailFileModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = URLEmailFileModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    email = factory.Faker("email")
+    website_url = factory.Faker("url")
+    backup_email = factory.Faker("email")
+    document = factory.django.FileField(filename="test.pdf")
+    image = factory.django.ImageField(color="blue")
+    thumbnail = factory.django.ImageField(color="red")
+
+
+class ChoiceTestModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ChoiceTestModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    priority = factory.Faker(
+        "random_element", elements=["low", "medium", "high", "critical"]
+    )
+    status = factory.Faker(
+        "random_element", elements=["pending", "in_progress", "completed", "cancelled"]
+    )
+    difficulty = factory.Faker("random_element", elements=["easy", "medium", "hard"])
+
+
+class DateTimeComprehensiveModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = DateTimeComprehensiveModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    date_field = factory.Faker("date_object")
+    time_field = factory.Faker("time_object")
+    datetime_field = factory.Faker("date_time_this_year")
+    auto_now_field = factory.Faker("date_time_this_year")
+    auto_now_add_field = factory.Faker("date_time_this_year")
+    optional_date = factory.Faker("date_object")
+    optional_time = factory.Faker("time_object")
+    optional_datetime = factory.Faker("date_time_this_year")
+    duration_field = factory.Faker("time_delta")
+
+
+class IdentifierModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IdentifierModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    uuid_field = factory.Faker("uuid4")
+    slug_field = factory.LazyAttribute(lambda obj: slugify(obj.title))
+    code = factory.Faker("bothify", text="???-#####")
+    identifier = factory.Faker("ean", length=13)
+
+
+class TextFieldsModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TextFieldsModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    description = factory.Faker("paragraph")
+    short_text = factory.Faker("word")
+    medium_text = factory.Faker("sentence", nb_words=10)
+    long_text = factory.Faker("paragraph", nb_sentences=5)
+    richtext_content = factory.Faker("text", max_nb_chars=200)
+
+
+class RelationshipTestModelFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = RelationshipTestModel
+
+    title = factory.Faker("sentence", nb_words=2)
+    author = factory.LazyFunction(lambda: Author.objects.first() or AuthorFactory())
+
 
 fake = Faker()
 
