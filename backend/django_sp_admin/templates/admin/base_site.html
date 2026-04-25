@@ -15,14 +15,14 @@
           {% block nav_sidebar %}
             {% for app in available_apps %}
               <div class="menu-group">
-                <button class="menu-btn text-left" data-sp-toggle="collapsible" data-sp-target="#sidebar-app-{{ app.app_label }}">
+                <button class="menu-btn text-left whitespace-normal h-auto py-1" data-sp-toggle="collapsible" data-sp-target="#sidebar-app-{{ app.app_label }}">
                   {{ app.name }}
                   <i class="ri-arrow-down-s-line ml-auto transition-transform [[aria-expanded=false]>&]:rotate-[-90deg]"></i>
                 </button>
                 <div id="sidebar-app-{{ app.app_label }}" class="collapsible-panel">
                   <div class="menu-subgroup">
                     {% for model in app.models %}
-                      <a href="{{ model.admin_url }}" class="menu-btn menu-btn-sm text-left">{{ model.name }}</a>
+                      <a href="{{ model.admin_url }}" class="menu-btn menu-btn-sm text-left whitespace-normal h-auto py-1">{{ model.name }}</a>
                     {% endfor %}
                   </div>
                 </div>
