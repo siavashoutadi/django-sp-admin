@@ -45,6 +45,27 @@
                       <input type="checkbox" class="checkbox" name="{{ field.field.html_name }}" id="{{ field.field.id_for_label }}"{% if field.field.value %} checked{% endif %} />
                       {{ field.label_tag }}
                     </div>
+                  {% elif field.field.field.widget.input_type == 'radio' %}
+                    <div class="w-fit">
+                      <div class="field-group">
+                        <span class="label">{{ field.label }}</span>
+                        {% for f in field.field %}
+                          <div class="field-group">
+                            <div class="field field-horizontal">
+                              <input
+                                type="radio"
+                                class="radio"
+                                id="{{ f.data.attrs.id }}"
+                                name="{{ f.data.name }}"
+                                value="{{ f.data.value }}"
+                                {% if f.data.selected %}checked{% endif %}
+                              />
+                              <label class="label" for="{{ f.data.attrs.id }}">{{ f.data.label }}</label>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
                   {% else %}
                     {# Regular fields #}
                     {{ field.label_tag }}
