@@ -132,15 +132,54 @@
 </div>
 {% endblock %}
 {% block extra_scripts %}
-<script>
-  // Close admin menu dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('admin-menu-dropdown');
-    const button = event.target.closest('button[onclick*="admin-menu-dropdown"]');
+  <script>
+    // Close admin menu dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('admin-menu-dropdown');
+      const button = event.target.closest('button[onclick*="admin-menu-dropdown"]');
 
-    if (!button && !dropdown.contains(event.target)) {
-      dropdown.classList.add('hidden');
+      if (!button && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+  </script>
+
+
+  <script>
+    //// Restore sidebar state from localStorage
+    (function () {
+      var ids;
+      try { ids = JSON.parse(localStorage.getItem('sidebar_open_groups')) || []; }
+      catch (e) { ids = []; }
+
+      ids.forEach(function (id) {
+        var panel = document.getElementById(id);
+        if (!panel) return;
+
+        panel.style.setProperty('--radix-collapsible-content-height', '9999px');
+        panel.classList.add('open', 'no-animation');
+        panel.setAttribute('data-state', 'open');
+
+        var btn = document.querySelector('[data-sp-target="#' + id + '"]');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+      });
+    })();
+  </script>
+
+
+  <script type="module">
+    // Save sidebar state to localStorage
+    const STORAGE_KEY = 'sidebar_open_groups';
+
+    function saveState() {
+      const openIds = [...document.querySelectorAll('.collapsible-panel.open')]
+        .map(el => el.id).filter(Boolean);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(openIds));
     }
-  });
-</script>
+
+    document.querySelectorAll('.collapsible-panel[id]').forEach(panel => {
+      new MutationObserver(() => saveState())
+        .observe(panel, { attributeFilter: ['class'] });
+    });
+  </script>
 {% endblock extra_scripts %}
