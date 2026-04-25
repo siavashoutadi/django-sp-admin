@@ -1,0 +1,114 @@
+
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls static %}
+
+{% block extrahead %}
+        {{ block.super }}
+        {{ media }}
+        <script src="{% static 'admin/js/cancel.js' %}" async></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation delete-selected-confirmation{% endblock %}
+
+
+{% block site_content %}
+<div id="content-main" class="flex-1">
+    {% block breadcrumbs %}
+      <nav class="breadcrumb mb-6">
+        <a href="{% url 'admin:index' %}" class="breadcrumb-link">{% translate 'Home' %}</a>
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        <a href="{% url 'admin:app_list' app_label=opts.app_label %}" class="breadcrumb-link">{{ opts.app_config.verbose_name }}</a>
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        <a href="{% url opts|admin_urlname:'changelist' %}" class="breadcrumb-link">{{ opts.verbose_name_plural|capfirst }}</a>
+        <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
+        <span class="breadcrumb-page" aria-current="page">{% translate 'Delete multiple objects' %}</span>
+      </nav>
+    {% endblock %}
+    <div class="p-6 max-w-4xl">
+        {% if perms_lacking %}
+            <div class="card mb-6">
+                <div class="card-content">
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold text-yellow-900 dark:text-yellow-200 mb-2">
+                            <i class="ri-alert-line mr-2"></i>
+                            {% translate "Permission Denied" %}
+                        </h2>
+                        <p class="text-yellow-800 dark:text-yellow-300 text-sm">
+                            {% blocktranslate %}Deleting the selected {{ objects_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktranslate %}
+                        </p>
+                    </div>
+                    <ul id="deleted-objects" class="space-y-2">
+                        {{ perms_lacking|unordered_list }}
+                    </ul>
+                </div>
+            </div>
+        {% elif protected %}
+            <div class="card mb-6">
+                <div class="card-content">
+                    <div class="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
+                        <h2 class="text-lg font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                            <i class="ri-shield-alert-line mr-2"></i>
+                            {% translate "Protected Objects" %}
+                        </h2>
+                        <p class="text-orange-800 dark:text-orange-300 text-sm">
+                            {% blocktranslate %}Deleting the selected {{ objects_name }} would require deleting the following protected related objects:{% endblocktranslate %}
+                        </p>
+                    </div>
+                    <ul id="deleted-objects" class="space-y-2">
+                        {{ protected|unordered_list }}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <div class="card mb-6">
+                <div class="card-content space-y-6">
+                    <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <h2 class="text-lg font-semibold text-red-900 dark:text-red-200 mb-2">
+                            <i class="ri-delete-bin-line mr-2"></i>
+                            {% translate "Confirm Deletion" %}
+                        </h2>
+                        <p class="text-red-800 dark:text-red-300 text-sm">
+                            {% blocktranslate %}Are you sure you want to delete the selected {{ objects_name }}? All of the following objects and their related items will be deleted:{% endblocktranslate %}
+                        </p>
+                    </div>
+
+                    {# Summary of what will be deleted #}
+                    {% include "admin/includes/object_delete_summary.html" %}
+
+                    {# Detailed list of deleted objects #}
+                    <div id="deleted-objects" class="space-y-3">
+                        <h3 class="text-base font-semibold">{% translate "Objects to delete" %}</h3>
+                        {% for deletable_object in deletable_objects %}
+                            <div class="rounded-lg border overflow-hidden">
+                                <ul class="divide-y divide-border">
+                                    {{ deletable_object|unordered_list }}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {# Confirmation form #}
+                    <form method="post" class="mt-6">
+                        {% csrf_token %}
+                        {% for obj in queryset %}
+                            <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
+                        {% endfor %}
+                        <input type="hidden" name="action" value="delete_selected">
+                        <input type="hidden" name="post" value="yes">
+                        <div class="flex gap-3">
+                            <button type="submit" class="btn btn-destructive gap-2">
+                                <i class="ri-delete-bin-line"></i>
+                                {% translate 'Yes, delete them' %}
+                            </button>
+                            <a role="button" href="{% url opts|admin_urlname:'changelist' %}" class="btn btn-outline cancel-link gap-2">
+                                <i class="ri-close-line"></i>
+                                {% translate "Cancel" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
