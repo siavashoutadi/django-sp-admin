@@ -66,6 +66,66 @@
                         {% endfor %}
                       </div>
                     </div>
+                  {% elif field.field.field.widget.input_type == 'file' %}
+                    <div class="field-group card">
+                      {% if field.is_readonly %}
+                        <div class="bg-muted/30 border border-muted rounded px-3 py-2 text-sm text-foreground">
+                          {{ field.contents|safe }}
+                        </div>
+                      {% else %}
+                        <div class="field card-content">
+                          <label for="{{ field.field.id_for_label }}" class="label">{{ field.field.label }}</label>
+
+                          {% if field.field.value %}
+                            <div class="flex flex-col sm:flex-row justify-between gap-4">
+                              <a href="{{ field.field.value.url }}" class="flex flex-row items-center space-x-2" target="_blank" rel="noopener noreferrer">
+                                <span>{{ field.field.value.name }}</span>
+                                <i class="ri-external-link-line"></i>
+                              </a>
+                              <label class="flex items-center text-sm text-center align-middle gap-2">
+                                <input type="checkbox" name="{{ field.field.html_name }}-clear" id="{{ field.field.id_for_label }}-clear_id" class="checkbox checked:bg-destructive checked:border-destructive">
+                                <p>Clear</p>
+                              </label>
+                            </div>
+                          {% endif %}
+
+                          <!-- Hidden real input -->
+                          <input type="file"
+                                name="{{ field.field.html_name }}"
+                                id="{{ field.field.id_for_label }}"
+                                class="hidden"
+                                onchange="updateFileName(this)">
+
+                          <div class="flex flex-row gap-2 w-full items-center mt-4">
+                            <!-- Custom styled button -->
+                            <label for="{{ field.field.id_for_label }}" class="btn btn-primary cursor-pointer">
+                              <i class="ri-upload-2-line"></i>
+                              Upload Image
+                            </label>
+
+                            <!-- File name display -->
+                            <span id="{{ field.field.id_for_label }}-filename" class="text-sm text-gray-500 ml-2">No file chosen</span>
+                          </div>
+                          <script>
+                            function updateFileName(input) {
+                              const spanId = input.id + '-filename';
+                              const span = document.getElementById(spanId);
+                              if (input.files && input.files.length > 0) {
+                                span.textContent = input.files[0].name;
+                              } else {
+                                span.textContent = 'No file chosen';
+                              }
+                            }
+                          </script>
+                        </div>
+                      {% endif %}
+
+                      {# Field description (help text) #}
+                      {% if field.field.help_text %}
+                        <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
+                      {% endif %}
+
+                    </div>
                   {% else %}
                     {# Regular fields #}
                     {{ field.label_tag }}

@@ -3,3 +3,4 @@
 .environments
 devcontainer/.env
 /.ai-workspace
+media
