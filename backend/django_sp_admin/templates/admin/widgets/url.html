@@ -1,0 +1,12 @@
+<div class="w-full">
+  <div class="field-group">
+    <div class="input-group">
+      {% include "django/forms/widgets/input.html" %}
+      {% if url_valid %}
+        <a href="{{ widget.href }}" class="input-group-btn-icon ml-2 mr-2" target="_blank" rel="noopener noreferrer" aria-label="Open link">
+          <i class="ri-external-link-line"></i>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
