@@ -126,7 +126,7 @@
                       {% endif %}
 
                     </div>
-                  {% else %}
+                    {% else %}
                     {# Regular fields #}
                     {{ field.label_tag }}
 
@@ -140,10 +140,12 @@
                       {% if 'related-widget-wrapper' in field.field.widget.template_name %}
                         {{ field.field }}
                       {% else %}
-                        {# Apply starting-point-ui classes to regular form fields #}
-                        <div class="sp-field-wrapper [&_input[type='text']]:input [&_input[type='text']]:w-full [&_input[type='email']]:input [&_input[type='email']]:w-full [&_input[type='password']]:input [&_input[type='password']]:w-full [&_input[type='number']]:input [&_input[type='number']]:w-full [&_input[type='date']]:input [&_input[type='date']]:w-full [&_input[type='time']]:input [&_input[type='time']]:w-full [&_input[type='url']]:input [&_input[type='url']]:w-full [&_select]:select [&_select]:w-full [&_textarea]:textarea [&_textarea]:w-full">
-                          {{ field.field }}
-                        </div>
+                        {% with is_multi_select=field.field.field.widget.widget.allow_multiple_selected %}
+                          {# Apply starting-point-ui classes to regular form fields #}
+                          <div class="sp-field-wrapper [&_input[type='text']]:input [&_input[type='text']]:w-full [&_input[type='email']]:input [&_input[type='email']]:w-full [&_input[type='password']]:input [&_input[type='password']]:w-full [&_input[type='number']]:input [&_input[type='number']]:w-full [&_input[type='date']]:input [&_input[type='date']]:w-full [&_input[type='time']]:input [&_input[type='time']]:w-full [&_input[type='url']]:input [&_input[type='url']]:w-full [&_textarea]:textarea [&_textarea]:w-full {% if is_multi_select %}[&_select]:w-full [&_select]:border-2 [&_select]:border-muted [&_select]:px-4 [&_select]:py-2 [&_select]:rounded-lg {% else %}[&_select]:select [&_select]:w-full{% endif %}">
+                            {{ field.field }}
+                          </div>
+                        {% endwith %}
                       {% endif %}
                     {% endif %}
                   {% endif %}
