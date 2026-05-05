@@ -45,6 +45,13 @@
                       <input type="checkbox" class="checkbox" name="{{ field.field.html_name }}" id="{{ field.field.id_for_label }}"{% if field.field.value %} checked{% endif %} />
                       {{ field.label_tag }}
                     </div>
+
+                    {# Checkbox field errors #}
+                    {% if field.errors %}
+                      <div id="{{ field.field.id_for_label }}_errors" class="text-destructive mt-2">
+                        {{ field.errors|safe }}
+                      </div>
+                    {% endif %}
                   {% elif field.field.field.widget.input_type == 'radio' %}
                     <div class="w-fit">
                       <div class="field-group">
@@ -66,6 +73,13 @@
                         {% endfor %}
                       </div>
                     </div>
+
+                    {# Radio field errors #}
+                    {% if field.errors %}
+                      <div id="{{ field.field.id_for_label }}_errors" class="text-destructive mt-2">
+                        {{ field.errors|safe }}
+                      </div>
+                    {% endif %}
                   {% elif field.field.field.widget.input_type == 'file' %}
                     <div class="field-group card">
                       {% if field.is_readonly %}
@@ -125,6 +139,13 @@
                         <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
                       {% endif %}
 
+                      {# File field errors #}
+                      {% if field.errors %}
+                        <div id="{{ field.field.id_for_label }}_errors" class="text-destructive">
+                          {{ field.errors|safe }}
+                        </div>
+                      {% endif %}
+
                     </div>
                     {% else %}
                     {# Regular fields #}
@@ -150,13 +171,13 @@
                     {% endif %}
                   {% endif %}
 
-                  {# Field description (help text) #}
-                  {% if field.field.help_text %}
+                  {# Field description (help text) - only for non-file fields #}
+                  {% if field.field.help_text and field.field.field.widget.input_type != 'file' %}
                     <p class="field-description" id="{{ field.field.id_for_label }}_help">{{ field.field.help_text|safe }}</p>
                   {% endif %}
 
-                  {# Field errors #}
-                  {% if field.errors %}
+                  {# Regular field errors (file/checkbox/radio errors handled inline above) #}
+                  {% if field.errors and field.field.field.widget.input_type != 'file' and not field.is_checkbox and 'radio' not in field.field.field.widget.input_type %}
                     <div id="{{ field.field.id_for_label }}_errors" class="text-destructive">
                       {{ field.errors|safe }}
                     </div>
