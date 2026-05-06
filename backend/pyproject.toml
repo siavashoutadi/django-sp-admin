@@ -16,7 +16,6 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.44.0",
-    "whitenoise>=6.12.0",
 ]
 
 [dependency-groups]
@@ -30,3 +29,11 @@ dev = [
     "rich>=14.3.3",
     "ruff>=0.15.9",
 ]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = ["django_sp_admin/"]
+source-includes = ["django_sp_admin/static"]
