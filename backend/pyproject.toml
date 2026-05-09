@@ -2,7 +2,7 @@
 name = "django-sp-admin"
 version = "0.1.0"
 description = "Starting point UI for Django admin"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 readme = "README.md"
 dependencies = [
     "django~=6.0.0",
@@ -36,4 +36,17 @@ build-backend = "pdm.backend"
 
 [tool.pdm.build]
 includes = ["django_sp_admin/"]
-source-includes = ["django_sp_admin/static"]
+source-includes = [
+    "admin_test",
+    "applications",
+    "settings",
+    "static",
+    "tailwind",
+    "templates",
+    "urls",
+    "users",
+    "manage.py",
+    "pdm_build.py",
+    "README.md",
+    "uv.lock"
+]
