@@ -250,6 +250,38 @@ body[class*="app-"] #content-main li {
 	filter: invert(1);
 }
 
+/* Alias Django admin's stock CSS custom properties to SP Admin's tokens so
+   third-party admin packages adapt to light/dark mode automatically. */
+:root {
+	--primary-fg: var(--primary-foreground);
+	--body-fg: var(--foreground);
+	--body-bg: var(--background);
+	--body-quiet-color: var(--muted-foreground);
+	--body-medium-color: var(--muted-foreground);
+	--body-loud-color: var(--foreground);
+	--link-fg: var(--primary);
+	--link-hover-color: var(--primary);
+	--link-selected-fg: var(--primary);
+	--hairline-color: var(--border);
+	--border-color: var(--border);
+	--error-fg: var(--destructive);
+	--darkened-bg: var(--muted);
+	--selected-bg: var(--muted);
+	--selected-row: var(--accent);
+	--button-fg: var(--primary-foreground);
+	--button-bg: var(--primary);
+	--button-hover-bg: var(--primary);
+	--default-button-bg: var(--primary);
+	--default-button-hover-bg: var(--primary);
+	--close-button-bg: var(--secondary);
+	--close-button-hover-bg: var(--muted);
+	--delete-button-bg: var(--destructive);
+	--delete-button-hover-bg: var(--destructive);
+	--object-tools-fg: var(--primary-foreground);
+	--object-tools-bg: var(--primary);
+	--object-tools-hover-bg: var(--primary);
+}
+
 body[class*="app-"] #content-main li:first-child>.addlink {
 	@apply btn btn-sm gap-2 w-full sm:w-auto;
 	background-image: none;
