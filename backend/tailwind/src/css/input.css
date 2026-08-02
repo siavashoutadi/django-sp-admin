@@ -245,6 +245,11 @@ body[class*="app-"] #content-main li {
 	list-style: none;
 }
 
+/* django-cabinet folder rows — stock black SVG is invisible in dark mode */
+:is(.dark *) .field-admin_thumbnail .folder {
+	filter: invert(1);
+}
+
 body[class*="app-"] #content-main li:first-child>.addlink {
 	@apply btn btn-sm gap-2 w-full sm:w-auto;
 	background-image: none;
