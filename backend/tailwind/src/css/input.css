@@ -240,6 +240,11 @@
 	}
 }
 
+/* django-prose-editor "Insert Figure" dialog — space between URL field and Browse button */
+.prose-editor-dialog .prose-editor-field-with-picker {
+	gap: 0.5rem;
+}
+
 /* third-party apps using stock admin markup (e.g. django-cabinet) — match theme */
 body[class*="app-"] #content-main li {
 	list-style: none;
