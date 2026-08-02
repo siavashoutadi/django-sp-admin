@@ -57,7 +57,7 @@
 }
 
 /* Label above the time display */
-[data-tp-display-panel] > div:first-child {
+[data-tp-display-panel]>div:first-child {
 	@layer l1.l2 {
 		@apply text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2;
 	}
@@ -78,7 +78,7 @@
 }
 
 /* Field label */
-[data-tp-field] > label {
+[data-tp-field]>label {
 	@layer l1.l2 {
 		@apply text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 block;
 	}
@@ -208,9 +208,7 @@
 /* Individual date cell button */
 [data-dp-date-cell] {
 	@layer l1.l2 {
-		@apply p-1 sm:p-2 text-center rounded cursor-pointer transition-colors text-xs sm:text-sm font-medium
-		       hover:bg-secondary hover:text-secondary-foreground
-		       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+		@apply p-1 sm:p-2 text-center rounded cursor-pointer transition-colors text-xs sm:text-sm font-medium hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
 	}
 }
 
@@ -240,4 +238,91 @@
 	@layer l1.l2 {
 		@apply flex gap-4 justify-center mt-6 flex-col;
 	}
+}
+
+/* third-party apps using stock admin markup (e.g. django-cabinet) — match theme */
+body[class*="app-"] #content-main li {
+	list-style: none;
+}
+
+body[class*="app-"] #content-main li:first-child>.addlink {
+	@apply btn btn-sm gap-2 w-full sm:w-auto;
+	background-image: none;
+}
+
+body[class*="app-"] #content-main li:not(:first-child)>.addlink {
+	@apply btn btn-outline btn-sm gap-2 w-full sm:w-auto;
+	background-image: none;
+	color: var(--color-foreground);
+}
+
+body[class*="app-"] .breadcrumbs {
+	@apply breadcrumb mb-6;
+}
+
+body[class*="app-"] .breadcrumbs a {
+	@apply breadcrumb-link;
+}
+
+body[class*="app-"] .submit-row {
+	@apply flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center justify-between p-4;
+}
+
+body[class*="app-"] .submit-row input[type="submit"] {
+	@apply btn w-full sm:w-auto;
+}
+
+/* theme change-list "Add" button — compact to match btn-sm buttons */
+body.change-list #content-main>div.flex>a.btn {
+	@apply btn btn-sm gap-2 w-full xl:w-auto;
+}
+
+/* Destructive buttons — make hover clearly visible (default 90% mix is too subtle) */
+.btn-destructive:hover {
+	background-color: color-mix(in oklab, var(--destructive) 85%, black);
+}
+
+.btn-destructive:is(.dark *):hover {
+	background-color: color-mix(in oklab, var(--destructive) 90%, white);
+}
+
+/* Pointer cursor on clickable controls (Tailwind preflight doesn't set it here) */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+input[type="submit"]:not(:disabled) {
+	cursor: pointer;
+}
+
+/* Stock admin forms.css styles `label` un-layered, which overrides the layered `.btn` styles.
+   Re-assert theme button styling for label-based buttons (e.g. file upload button). */
+label.btn {
+	color: var(--primary-foreground);
+	font-weight: var(--font-weight-medium);
+	font-size: var(--text-sm);
+}
+
+/* Results table rows injected by third-party apps into `#result_list` (e.g. django-cabinet
+   folder rows) carry stock admin classes instead of theme utilities. Style them so they match
+   theme rows that use `.table-row` / `.table-cell`; the `:not()` guards keep utility-classed
+   cells (including the empty-state message row) untouched. */
+#result_list tbody tr:not(.table-row) {
+	display: table-row;
+	border-bottom-style: var(--tw-border-style);
+	border-bottom-width: 1px;
+	transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+	transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
+
+#result_list tbody tr:hover {
+	background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+}
+
+#result_list tbody td:not(.table-cell),
+#result_list tbody th:not(.table-cell) {
+	padding-inline: calc(var(--spacing) * 4);
+	padding-block: calc(var(--spacing) * 3);
+	vertical-align: middle;
+	text-align: left;
+	white-space: nowrap;
 }

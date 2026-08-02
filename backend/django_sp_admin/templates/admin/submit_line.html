@@ -1,6 +1,6 @@
 {% load i18n admin_urls %}
 
-<div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center justify-between p-4 border-t bg-muted/30 rounded-b-lg">
+<div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center justify-between p-4">
   <div class="space-y-2 sm:space-y-0 sm:space-x-2 flex flex-col sm:flex-row items-stretch sm:items-center">
     {% block submit-row %}
       {% if show_save %}
@@ -11,21 +11,21 @@
       {% endif %}
 
       {% if show_save_as_new %}
-        <button type="submit" value="{% translate 'Save as new' %}" class="btn btn-secondary w-full sm:w-auto" name="_saveasnew">
+        <button type="submit" value="{% translate 'Save as new' %}" class="btn btn-outline w-full sm:w-auto" name="_saveasnew">
           <i class="ri-file-copy-line"></i>
           {% translate 'Save as new' %}
         </button>
       {% endif %}
 
       {% if show_save_and_add_another %}
-        <button type="submit" value="{% translate 'Save and add another' %}" class="btn btn-secondary w-full sm:w-auto" name="_addanother">
+        <button type="submit" value="{% translate 'Save and add another' %}" class="btn btn-outline w-full sm:w-auto" name="_addanother">
           <i class="ri-add-line"></i>
           {% translate 'Save and add another' %}
         </button>
       {% endif %}
 
       {% if show_save_and_continue %}
-        <button type="submit" value="{% if can_change %}{% translate 'Save and continue editing' %}{% else %}{% translate 'Save and view' %}{% endif %}" class="btn btn-secondary w-full sm:w-auto" name="_continue">
+        <button type="submit" value="{% if can_change %}{% translate 'Save and continue editing' %}{% else %}{% translate 'Save and view' %}{% endif %}" class="btn btn-outline w-full sm:w-auto" name="_continue">
           <i class="ri-arrow-right-line"></i>
           {% if can_change %}
             {% translate 'Save and continue editing' %}

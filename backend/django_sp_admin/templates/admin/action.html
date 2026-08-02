@@ -45,7 +45,7 @@
             type="submit"
             name="index"
             value="{{ forloop.counter0 }}"
-            class="btn btn-outline btn-sm gap-2 w-full xl:w-auto{% if "delete" in option.1|lower %} btn-destructive{% endif %}"
+            class="btn btn-sm gap-2 w-full xl:w-auto{% if "delete" in option.0|lower %} btn-destructive{% else %} btn-outline{% endif %}"
             onclick="document.querySelector('select[name=action]').value='{{ option.0 }}';"
           >
             {{ option.1 }}

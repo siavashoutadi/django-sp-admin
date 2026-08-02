@@ -1,5 +1,7 @@
 {% extends 'admin/base_site.html' %}
-{% load i18n static django_sp_admin %}
+{% load django_sp_admin i18n static %}
+
+{% block bodyclass %}{{ block.super }} app-{{ app_label }}{% endblock %}
 
 {% block site_content %}
 <div class="space-y-8 pb-8">
@@ -7,7 +9,7 @@
   {# ======== APP STATISTICS ======== #}
   <section>
     <div class="section-title mb-6">
-      <h2 class="text-2xl font-bold">{% trans "App Statistics" %}</h2>
+      <h2 class="text-2xl font-bold">{% translate "App Statistics" %}</h2>
     </div>
 
     <div class="card">
@@ -20,7 +22,7 @@
           <div>
             <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
               <i class="ri-layout-grid-line mr-1"></i>
-              {% trans "Total Models" %}
+              {% translate "Total Models" %}
             </p>
             <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ stats.total_models }}</p>
           </div>
@@ -29,7 +31,7 @@
           <div>
             <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
               <i class="ri-check-double-line mr-1"></i>
-              {% trans "Accessible Models" %}
+              {% translate "Accessible Models" %}
             </p>
             <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ stats.accessible_models }}</p>
           </div>
@@ -38,17 +40,17 @@
           <div>
             <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
               <i class="ri-database-line mr-1"></i>
-              {% trans "Recent Changes" %}
+              {% translate "Recent Changes" %}
             </p>
             <p class="text-lg sm:text-xl lg:text-2xl font-semibold">{{ activity.recent_changes }}</p>
-            <span class="text-xs text-muted-foreground">{% trans "Last 7 days" %}</span>
+            <span class="text-xs text-muted-foreground">{% translate "Last 7 days" %}</span>
           </div>
 
           {# Activity Indicators #}
           <div>
             <p class="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
               <i class="ri-pulse-line mr-1"></i>
-              {% trans "Activity" %}
+              {% translate "Activity" %}
             </p>
             <div class="flex items-baseline gap-2">
               <span class="badge bg-green-500/10 text-green-600 border-0">
@@ -73,7 +75,7 @@
   {% if model_health %}
   <section>
     <div class="section-title mb-6">
-      <h2 class="text-2xl font-bold">{% trans "Models by Record Count" %}</h2>
+      <h2 class="text-2xl font-bold">{% translate "Models by Record Count" %}</h2>
     </div>
 
     <div class="card">
@@ -82,10 +84,10 @@
           <table class="table w-full">
             <thead class="table-header">
               <tr class="table-row">
-                <th class="table-head">{% trans "Model" %}</th>
-                <th class="table-head text-right">{% trans "Records" %}</th>
-                <th class="table-head text-center">{% trans "Status" %}</th>
-                <th class="table-head text-center">{% trans "Access" %}</th>
+                <th class="table-head">{% translate "Model" %}</th>
+                <th class="table-head text-right">{% translate "Records" %}</th>
+                <th class="table-head text-center">{% translate "Status" %}</th>
+                <th class="table-head text-center">{% translate "Access" %}</th>
               </tr>
             </thead>
             <tbody class="table-body">
@@ -107,17 +109,17 @@
                     {% if model.count == 0 %}
                       <span class="badge bg-gray-500/10 text-gray-600 border-0">
                         <i class="ri-inbox-line"></i>
-                        {% trans "Empty" %}
+                        {% translate "Empty" %}
                       </span>
                     {% elif model.count > 1000 %}
                       <span class="badge bg-blue-500/10 text-blue-600 border-0">
                         <i class="ri-bar-chart-2-line"></i>
-                        {% trans "Large" %}
+                        {% translate "Large" %}
                       </span>
                     {% else %}
                       <span class="badge bg-green-500/10 text-green-600 border-0">
                         <i class="ri-check-line"></i>
-                        {% trans "Active" %}
+                        {% translate "Active" %}
                       </span>
                     {% endif %}
                   </td>
@@ -149,4 +151,4 @@
 
 </div>
 
-{% endblock %}
+{% endblock site_content %}

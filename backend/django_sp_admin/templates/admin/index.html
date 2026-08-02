@@ -1,5 +1,7 @@
 {% extends 'admin/base_site.html' %}
-{% load i18n static django_sp_admin %}
+{% load django_sp_admin i18n static %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 
 {% block site_content %}
 <div class="space-y-8 pb-8">
@@ -130,4 +132,4 @@
   </section>
 </div>
 
-{% endblock %}
+{% endblock site_content %}

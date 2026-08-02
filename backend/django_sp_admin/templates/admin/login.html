@@ -3,6 +3,12 @@
 
 {% block title %}{% translate 'Log in to the Admin panel' %} {% endblock %}
 
+{% block extrastyle %}{{ block.super }}{{ form.media }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+
+{% block content_title %}{% endblock %}
+
 {% block content %}
   <div class="flex min-h-screen items-center justify-center bg-(--color-background) p-6">
     <div class="w-full max-w-sm space-y-8">
@@ -100,4 +106,4 @@
       </form>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}

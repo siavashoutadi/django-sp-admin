@@ -1,6 +1,4 @@
-{% load tailwind_cli %}
-{% load static %}
-{% load i18n %}
+{% load i18n static tailwind_cli %}
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}">
@@ -13,27 +11,33 @@
     <title>
       {% block title %}
         Home
-      {% endblock %}
+      {% endblock title %}
     </title>
     <link rel="stylesheet" href="{% static 'css/django_sp_admin/django_sp_admin.min.css' %}" />
     {% include 'admin/_tw_dark_mode.html' %}
+    {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.css"
       rel="stylesheet"
     />
   </head>
-  <body>
+  <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now "Z" %}">
     <main id="content">
+      {% block pretitle %}{% endblock %}
+      {% block content_title %}{% endblock %}
+      {% block content_subtitle %}{% endblock %}
       {% block content %}
 
-      {% endblock %}
+      {% endblock content %}
+      {% block sidebar %}{% endblock %}
     </main>
 
     <!-- Extra blocks -->
-    {% block extra_body %}
+    {% block extrabody %}
 
-    {% endblock %}
+    {% endblock extrabody %}
 
     <!-- Scripts -->
     <script src="{% static 'js/django_sp_admin/starting-point-ui.min.js' %}" type="module"></script>

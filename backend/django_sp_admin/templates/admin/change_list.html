@@ -1,7 +1,32 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls static admin_list %}
+{% load admin_list admin_urls i18n static %}
 
 {% block title %}{{ cl.opts.verbose_name_plural|capfirst }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "admin/css/changelists.css" %}">
+  {% if cl.formset %}
+    <link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+  {% if cl.formset or action_form %}
+    <script src="{% url 'admin:jsi18n' %}"></script>
+  {% endif %}
+  {{ media.css }}
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock extrastyle %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {{ media.js }}
+  <script src="{% static 'admin/js/filters.js' %}" defer></script>
+{% endblock extrahead %}
 
 {% block site_content %}
   <div id="content-main" class="max-w-screen mx-auto">
@@ -14,16 +39,16 @@
         <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
         <span class="breadcrumb-page" aria-current="page">{{ cl.opts.verbose_name_plural|capfirst }}</span>
       </nav>
-      {% endblock %}
+      {% endblock breadcrumbs %}
     {% endif %}
 
     {% block object-tools %}
     <div class="flex flex-col sm:flex-row gap-2 mb-6 sm:justify-end">
       {% block object-tools-items %}
         {% change_list_object_tools %}
-      {% endblock %}
+      {% endblock object-tools-items %}
     </div>
-    {% endblock %}
+    {% endblock object-tools %}
 
     {% if cl.formset and cl.formset.errors %}
       <div class="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-md">
@@ -98,13 +123,13 @@
             </div>
           </aside>
         {% endif %}
-      {% endblock %}
+      {% endblock filters %}
 
       <!-- Right Content Area: Search, Table, Pagination -->
       <section class="flex-1 w-full overflow-x-auto">
         {% block search %}
           {% search_form cl %}
-        {% endblock %}
+        {% endblock search %}
 
         {% block date_hierarchy %}
           {% if cl.date_hierarchy %}
@@ -112,7 +137,7 @@
             {% date_hierarchy cl %}
           </div>
           {% endif %}
-        {% endblock %}
+        {% endblock date_hierarchy %}
 
         <!-- Main Form with Results -->
         <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
@@ -137,7 +162,7 @@
                 {% include "admin/action.html" %}
               </div>
             {% endif %}
-          {% endblock %}
+          {% endblock result_list %}
 
           <!-- Pagination and Save -->
           {% block pagination %}
@@ -151,7 +176,7 @@
               </button>
             {% endif %}
           </div>
-          {% endblock %}
+          {% endblock pagination %}
         </form>
       </section>
     </section>
@@ -225,9 +250,9 @@
     </dialog>
     {% endif %}
   </div>
-{% endblock %}
+{% endblock site_content %}
 
 {% block extra_scripts %}
   {{ block.super }}
   <script src="{% static 'js/django_sp_admin/change_list.js' %}"></script>
-{% endblock %}
+{% endblock extra_scripts %}

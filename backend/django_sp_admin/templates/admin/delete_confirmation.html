@@ -1,7 +1,15 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls static django_sp_admin %}
+{% load admin_urls django_sp_admin i18n static %}
 
-{% block title %}{% blocktrans %}Delete {{ object_name }} - {{ object }}{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktranslate %}Delete {{ object_name }} - {{ object }}{% endblocktranslate %}{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {{ media }}
+  <script src="{% static 'admin/js/cancel.js' %}" async></script>
+{% endblock extrahead %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation{% endblock %}
 
 {% block site_content %}
 <div id="content-main" class="flex-1">
@@ -18,7 +26,7 @@
       <span class="breadcrumb-separator" aria-hidden="true"><i class="ri-arrow-right-s-line"></i></span>
       <span class="breadcrumb-page" aria-current="page">{% translate 'Delete' %}</span>
     </nav>
-    {% endblock %}
+    {% endblock breadcrumbs %}
   {% endif %}
 
   <div class="p-6 max-w-4xl">
@@ -43,7 +51,7 @@
             </ul>
           </div>
         </div>
-      {% endblock %}
+      {% endblock delete_forbidden %}
 
     {% elif protected %}
       {% block delete_protected %}
@@ -66,7 +74,7 @@
             </ul>
           </div>
         </div>
-      {% endblock %}
+      {% endblock delete_protected %}
 
     {% else %}
       {% block delete_confirm %}
@@ -128,8 +136,8 @@
             </form>
           </div>
         </div>
-      {% endblock %}
+      {% endblock delete_confirm %}
     {% endif %}
   </div>
 </div>
-{% endblock %}
+{% endblock site_content %}

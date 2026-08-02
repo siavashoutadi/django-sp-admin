@@ -28,7 +28,7 @@
                 </div>
               </div>
             {% endfor %}
-          {% endblock %}
+          {% endblock nav_sidebar %}
         </nav>
         <footer class="sidebar-footer border-t p-3 mt-auto">
           {% if has_permission %}
@@ -123,14 +123,19 @@
         </nav>
       </header>
       <div class="p-6">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% endblock %}
+        {% block content_subtitle %}{% endblock %}
         {% block site_content %}{% endblock %}
+        {% block sidebar %}{% endblock %}
       </div>
       {% include './_notification.html' %}
     </main>
     {% include 'admin/_user_profile_dialog.html' %}
   </div>
 </div>
-{% endblock %}
+{% endblock content %}
+
 {% block extra_scripts %}
   <script>
     // Close admin menu dropdown when clicking outside
